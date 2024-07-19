@@ -7,14 +7,14 @@ import java.util.List;
 import java.util.stream.Collectors;
 public class ProductMapper {
 
-    // 모든 필드를 포함하는 ProductDto 리스트로 변환하는 메서드
+    // 모든 필드를 포함하는 ProductReturn 리스트로 변환하는 메서드
     public static List<ProductReturn> convertToProductReturnList(List<Product> products) {
         return products.stream()
                 .map(ProductMapper::convertToProductReturn)
                 .collect(Collectors.toList());
     }
 
-    // 지정된 필드만 포함하는 ProductDto 리스트로 변환하는 메서드
+    // 지정된 필드만 포함하는 ProductReturn 리스트로 변환하는 메서드
     public static List<ProductReturn> convertToProductReturnListWithSelectedFields(List<Product> products, List<String> fields) {
         return products.stream()
                 .map(product -> convertToProductReturnWithSelectedFields(product, fields))
@@ -32,7 +32,7 @@ public class ProductMapper {
         ProductReturn.setCode(product.getCode());
         ProductReturn.setStock(product.getStock());
         ProductReturn.setPrice(product.getPrice());
-        ProductReturn.setFile(product.getFileUrl());
+        ProductReturn.setFileUrl(product.getFileUrl());
 
 
         // 필요한 경우 다른 필드도 추가할 수 있음
@@ -40,21 +40,39 @@ public class ProductMapper {
         return ProductReturn;
     }
 
-    // 지정된 필드만 포함하는 ProductDto로 변환하는 메서드
-    public static ProductDto convertToProductDtoWithSelectedFields(Product product, List<String> fields) {
-        ProductDto productDto = new ProductDto();
-        if (fields.contains("id")) {
-            productDto.setId(product.getId());
+    // 지정된 필드만 포함하는 ProductReturn로 변환하는 메서드
+    public static ProductReturn convertToProductReturnWithSelectedFields(Product product, List<String> fields) {
+        ProductReturn ProductReturn= new ProductReturn();
+        if (fields.contains("category_gender")) {
+            ProductReturn.setCategory_gender(product.getGender());
+        }
+        if (fields.contains("category_kind")) {
+            ProductReturn.setCategory_kind(product.getKind());
         }
         if (fields.contains("name")) {
-            productDto.setName(product.getName());
+            ProductReturn.setName(product.getName());
+        }
+        if (fields.contains("color")) {
+            ProductReturn.setColor(product.getColor());
+        }
+        if (fields.contains("fullname")) {
+            ProductReturn.setFullname(product.getFullName());
+        }
+        if (fields.contains("code")) {
+            ProductReturn.setCode(product.getCode());
+        }
+        if (fields.contains("stock")) {
+            ProductReturn.setStock(product.getStock());
+        }
+        if (fields.contains("file")) {
+            ProductReturn.setFileUrl(product.getFileUrl());
         }
         if (fields.contains("price")) {
-            productDto.setPrice(product.getPrice());
+            ProductReturn.setPrice(product.getPrice());
         }
         // 필요한 경우 다른 필드도 추가할 수 있음
 
-        return productDto;
+        return ProductReturn;
     }
 
 }
