@@ -1,5 +1,4 @@
 package com.second.backend.dto;
-import org.springframework.web.multipart.MultipartFile;
 
 public class ProductReturn {
 
@@ -11,7 +10,7 @@ public class ProductReturn {
     private String code;            // 클라이언트에서는 code로 전송됨
     private Integer stock;          // 클라이언트에서는 stock으로 전송됨
     private Integer price;          // 클라이언트에서는 price로 전송됨
-    private MultipartFile file;    // 클라이언트에서는 file로 전송됨 (이미지 파일을 받기 위한 필드)
+    private String fileUrl;;    // 클라이언트에서는 file로 전송됨 (이미지 파일을 받기 위한 필드)
 
 
     public ProductReturn() {
@@ -81,12 +80,12 @@ public class ProductReturn {
         this.price = price;
     }
 
-    public MultipartFile getFile() {
-        return file;
+    public String getFileUrl() {
+        return fileUrl;
     }
 
-    public void setFile(MultipartFile file) {
-        this.file = file;
+    public void setFileUrl(String fileUrl) {
+        this.fileUrl = fileUrl;
     }
 
 

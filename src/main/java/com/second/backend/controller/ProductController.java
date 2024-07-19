@@ -1,6 +1,7 @@
 package com.second.backend.controller;
 import com.second.backend.model.Product;
-import com.second.backend.dto.ProductRequest;
+import java.util.Base64;
+import org.springframework.http.HttpHeaders;
 import com.second.backend.dto.ProductReturn;
 import com.second.backend.utils.ProductMapper;
 import com.second.backend.service.ProductService;
@@ -22,76 +23,140 @@ import java.time.LocalDate;
 public class ProductController {
     @Autowired
     private ProductService productService;
+    private static final String UPLOAD_DIR = "uploads/";
 
     // 모든 제품 목록 조회
-    @GetMapping("/products")
+    @GetMapping
     public ResponseEntity<List<ProductReturn>> getAllProducts(@RequestParam(required = false) List<String> fields) {
         List<Product> products = productService.getAllProducts();
 
         // 모든 필드를 반환하도록 요청이 없는 경우
         if (fields == null || fields.isEmpty()) {
-            List<ProductReturn> ProductReturns = convertToProductReturnList(products);
-            return ResponseEntity.ok(ProductReturns);
+            List<ProductReturn> productReturns = ProductMapper.convertToProductReturnList(products);
+            return ResponseEntity.ok(productReturns);
         } else {
-            List<ProductReturn> ProductReturns = convertToProductReturnListWithSelectedFields(products, fields);
-            return ResponseEntity.ok(ProductReturns);
+            List<ProductReturn> productReturns = ProductMapper.convertToProductReturnListWithSelectedFields(products, fields);
+            return ResponseEntity.ok(productReturns);
         }
     }
-    // 이미지 업로드 디렉토리 경로
-    private static String UPLOAD_DIR = "uploads/";
 
     // 제품 저장
     @PostMapping
-    public ResponseEntity<?> createProduct(@RequestBody ProductRequest productRequest) {
+    public ResponseEntity<?> createProduct(
+            @RequestParam("category_gender") String categoryGender,
+            @RequestParam("category_kind") String categoryKind,
+            @RequestParam("name") String name,
+            @RequestParam("color") String color,
+            @RequestParam("fullname") String fullName,
+            @RequestParam("code") String code,
+            @RequestParam("stock") String stock,
+            @RequestParam("price") String price,
+            @RequestParam(value = "file", required = false) MultipartFile file,
+            @RequestParam(value = "description", required = false) String description){
         try {
-            // 이미지 파일을 업로드하고 파일의 URL을 생성
-            String imageUrl = saveImageFile(productRequest.getFile());
-            // 현재 날짜로 listed_date 설정
+            String imageUrl = productService.saveImageFile(file);
+
             LocalDate today = LocalDate.now();
+            Integer stockInt = Integer.parseInt(stock);
+            Integer priceInt = Integer.parseInt(price);
 
-            // Product 객체 생성 및 데이터 설정
             Product product = new Product();
-            product.setGender(productRequest.getCategory_gender());
-            product.setKind(productRequest.getCategory_kind());
-            product.setName(productRequest.getName());
-            product.setColor(productRequest.getColor());
-            product.setFullName(productRequest.getfullname());
-            product.setCode(productRequest.getCode());
-            product.setStock(productRequest.getStock());
-            product.setPrice(productRequest.getPrice());
-            product.setFileUrl(imageUrl); // 이미지 URL 설정
-            product.setListedDate(today); // 오늘 날짜로 설정
-            product.setDescription(productRequest.getDescription());
+            product.setGender(categoryGender);
+            product.setKind(categoryKind);
+            product.setName(name);
+            product.setColor(color);
+            product.setFullName(fullName);
+            product.setCode(code);
+            product.setStock(stockInt);
+            product.setPrice(priceInt);
+            product.setFileUrl(imageUrl);
+            product.setListedDate(today);
+            product.setDescription(description);
 
-            // ProductService를 통해 Product 저장
             productService.saveProduct(product);
 
-            // 성공적으로 생성되었음을 클라이언트에게 응답
-            return new ResponseEntity<>("Product created successfully", HttpStatus.CREATED);
+            // JSON 형식으로 응답 반환
+            return ResponseEntity.ok().body(new SuccessResponse("Product created successfully"));
         } catch (Exception e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse(e.getMessage()));
         }
     }
-    // 이미지 파일을 저장하고 URL을 반환하는 메서드
+    // 성공 응답 클래스
+    public static class SuccessResponse {
+        private String message;
+
+        public SuccessResponse(String message) {
+            this.message = message;
+        }
+
+        public String getMessage() {
+            return message;
+        }
+
+        public void setMessage(String message) {
+            this.message = message;
+        }
+    }
+
+    // 오류 응답 클래스
+    public static class ErrorResponse {
+        private String error;
+
+        public ErrorResponse(String error) {
+            this.error = error;
+        }
+
+        public String getError() {
+            return error;
+        }
+
+        public void setError(String error) {
+            this.error = error;
+        }
+    }
     private String saveImageFile(MultipartFile file) throws IOException {
         if (file != null && !file.isEmpty()) {
-            // 업로드할 디렉토리 경로 생성
             File uploadDir = new File(UPLOAD_DIR);
             if (!uploadDir.exists()) {
-                uploadDir.mkdirs(); // 디렉토리가 존재하지 않으면 생성
+                uploadDir.mkdirs();
             }
 
-            // 파일의 실제 경로 설정
             String fileName = file.getOriginalFilename();
             String filePath = UPLOAD_DIR + fileName;
             Path path = Paths.get(filePath);
 
-            // 파일을 저장하고 경로를 URL로 반환
             Files.write(path, file.getBytes());
-            return "/api/products/image/" + fileName; // 예시 URL 반환
+            return "/api/products/image/" + fileName;
         }
-        return null; // 파일이 없을 경우 null 반환
+        return null;
     }
+
+    @GetMapping("/image/{filename}")
+    public ResponseEntity<String> getImage(@PathVariable String filename) throws IOException {
+        String filePath = UPLOAD_DIR + filename;
+        String base64Image = encodeImageToBase64(filePath);
+
+        if (base64Image != null) {
+            String mimeType = Files.probeContentType(Paths.get(filePath)); // MIME 타입을 동적으로 결정
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_TYPE, mimeType != null ? mimeType : "image/jpeg")
+                    .body("data:" + (mimeType != null ? mimeType : "image/jpeg") + ";base64," + base64Image);
+        } else {
+            throw new IOException("Could not read file: " + filename);
+        }
+    }
+
+    private String encodeImageToBase64(String filePath) {
+        try {
+            Path path = Paths.get(filePath);
+            byte[] imageBytes = Files.readAllBytes(path);
+            return Base64.getEncoder().encodeToString(imageBytes); // Java 표준 Base64 사용
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
 
 
 }

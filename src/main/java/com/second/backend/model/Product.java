@@ -40,10 +40,10 @@ public class Product {
     private Integer price;
 
     @Column(name = "file", length = 255, nullable = false)
-    private String fileUrl;
+    private String fileUrl;// 이미지 URL 저장
 
     @Column(name = "listed_date")
-    private LocalDate listedDate;// 이미지 URL 저장
+    private LocalDate listedDate;
 
     @Column(name = "description", columnDefinition = "text")
     private String description;
