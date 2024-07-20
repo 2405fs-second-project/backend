@@ -1,35 +1,31 @@
 package com.second.backend.dto;
 
-public class ProductReturn {
-
-    private String category_gender;
-    private String category_kind;
+public class ProductDetailResponse {
+    private Integer id;
+    private String catekind;
     private String name;
     private String color;
     private String fullname;
     private String code;
-    private Integer stock;
     private Integer price;
-    private String fileUrl;;
+    private String fileUrl;
+    private String description;
 
 
-    public ProductReturn() {
+    public Integer getId() {
+        return id;
     }
 
-    public String getCategory_gender() {
-        return category_gender;
+    public void setId(Integer id) {
+        this.id = id;
     }
 
-    public void setCategory_gender(String category_gender) {
-        this.category_gender = category_gender;
+    public String getCatekind() {
+        return catekind;
     }
 
-    public String getCategory_kind() {
-        return category_kind;
-    }
-
-    public void setCategory_kind(String category_kind) {
-        this.category_kind = category_kind;
+    public void setCatekind(String catekind) {
+        this.catekind = catekind;
     }
 
     public String getName() {
@@ -64,14 +60,6 @@ public class ProductReturn {
         this.code = code;
     }
 
-    public Integer getStock() {
-        return stock;
-    }
-
-    public void setStock(Integer stock) {
-        this.stock = stock;
-    }
-
     public Integer getPrice() {
         return price;
     }
@@ -86,6 +74,14 @@ public class ProductReturn {
 
     public void setFileUrl(String fileUrl) {
         this.fileUrl = fileUrl;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
 
