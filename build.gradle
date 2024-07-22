@@ -4,7 +4,7 @@ plugins {
     id 'io.spring.dependency-management' version '1.1.5'
 }
 
-group = 'com.second'
+group = 'com.github'
 version = '0.0.1-SNAPSHOT'
 
 java {
@@ -24,14 +24,18 @@ repositories {
 }
 
 dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    // implementation 'org.springframework.boot:spring-boot-starter-security'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.security:spring-security-test'
+    runtimeOnly 'com.h2database:h2'
     implementation 'mysql:mysql-connector-java:8.0.28' // MySQL 버전에 맞는 최신 버전 사용
     implementation 'com.google.protobuf:protobuf-java:3.19.1' // 최신 버전 사용
-    compileOnly 'org.projectlombok:lombok'
+    compileOnly 'org.projectlombok:lombok:1.18.24'
+    annotationProcessor 'org.projectlombok:lombok:1.18.24'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
-    annotationProcessor 'org.projectlombok:lombok'
+
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
