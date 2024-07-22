@@ -1,180 +1,62 @@
 package com.second.backend.model;
+
 import jakarta.persistence.*;
+import lombok.*;
+
 @Entity
 @Table(name = "users")
+@Getter
+@Setter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@Builder
 public class Users {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    @Column(name = "id", updatable = false)
+    private Integer id;
 
-    @Column(nullable = false, length = 30)
-    private String name;
-
-    @Column(nullable = false, length = 40, unique = true)
+    @Column(name = "email", nullable = false, length = 40, unique = true)
     private String email;
 
-    @Column(nullable = false, length = 100)
+    @Column(name = "name", nullable = false, length = 30)
+    private String name;
+
+    @Column(name = "password", nullable = false, length = 100)
     private String password;
 
-    @Column(nullable = false, length = 100)
-    private String phoneNum;
+    @Column(name = "phone_num", nullable = false, length = 20)
+    private String phone_num;
 
-    @Column(nullable = false, length = 100)
+    @Column(name = "address", nullable = false, length = 100)
     private String address;
 
-    @Enumerated(EnumType.STRING)
     @Column(name = "gender", nullable = false)
+    @Enumerated(EnumType.STRING)
     private Gender gender;
 
-    @Column(length = 255)
-    private String profilePictureUrl;
+    @Column(name = "profile_picture_url", columnDefinition = "TEXT DEFAULT ''")
+    private String profile_picture_url;
 
-    @Column(length = 100)
-    private String aboutMe;
+    @Column(name = "about_me", length = 100, columnDefinition = "VARCHAR(100) DEFAULT ''")
+    @Builder.Default
+    private String about_me = "";
 
-    @Column
-    private Integer shoppingPay;
+    @Column(name = "update_name", length = 30)
+    private String update_name;
 
-    @Enumerated(EnumType.STRING)
-    private Status status;
+    @Column(name = "update_address", length = 500)
+    private String update_address;
 
-    @Column(length = 30)
-    private String updateName;
+    @Column(name = "update_phone", length = 50)
+    private String update_phone;
 
-    @Column(length = 50)
-    private String updatePhone;
-
-    @Column(length = 500)
-    private String updateAddress;
-
-    @Column(length = 500)
-    private String shippingInfo;
+    @Column(name = "shipping_info", length = 500)
+    private String shipping_info;
 
     public enum Gender {
-        MALE, FEMALE
-    }
-
-    public enum Status {
-        ACTIVE, DELETED
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getPhoneNum() {
-        return phoneNum;
-    }
-
-    public void setPhoneNum(String phoneNum) {
-        this.phoneNum = phoneNum;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
-    public Gender getGender() {
-        return gender;
-    }
-
-    public void setGender(Gender gender) {
-        this.gender = gender;
-    }
-
-    public String getProfilePictureUrl() {
-        return profilePictureUrl;
-    }
-
-    public void setProfilePictureUrl(String profilePictureUrl) {
-        this.profilePictureUrl = profilePictureUrl;
-    }
-
-    public String getAboutMe() {
-        return aboutMe;
-    }
-
-    public void setAboutMe(String aboutMe) {
-        this.aboutMe = aboutMe;
-    }
-
-    public Integer getShoppingPay() {
-        return shoppingPay;
-    }
-
-    public void setShoppingPay(Integer shoppingPay) {
-        this.shoppingPay = shoppingPay;
-    }
-
-    public Status getStatus() {
-        return status;
-    }
-
-    public void setStatus(Status status) {
-        this.status = status;
-    }
-
-    public String getUpdateName() {
-        return updateName;
-    }
-
-    public void setUpdateName(String updateName) {
-        this.updateName = updateName;
-    }
-
-    public String getUpdatePhone() {
-        return updatePhone;
-    }
-
-    public void setUpdatePhone(String updatePhone) {
-        this.updatePhone = updatePhone;
-    }
-
-    public String getUpdateAddress() {
-        return updateAddress;
-    }
-
-    public void setUpdateAddress(String updateAddress) {
-        this.updateAddress = updateAddress;
-    }
-
-    public String getShippingInfo() {
-        return shippingInfo;
-    }
-
-    public void setShippingInfo(String shippingInfo) {
-        this.shippingInfo = shippingInfo;
+        MALE,
+        FEMALE
     }
 }
