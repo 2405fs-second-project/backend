@@ -2,7 +2,7 @@
 //
 //import com.github.userpage.model.User;
 //import com.github.userpage.service.UserService;
-//import com.github.userpage.web.dto.ViewUserResponse;
+//import com.second.backend.dto.ViewUserResponse;
 //import org.junit.jupiter.api.BeforeEach;
 //import org.junit.jupiter.api.Test;
 //import org.mockito.InjectMocks;

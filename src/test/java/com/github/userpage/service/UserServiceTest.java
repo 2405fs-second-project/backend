@@ -1,7 +1,6 @@
 package com.github.userpage.service;
 
-import com.github.userpage.model.Users;
-import com.github.userpage.repository.UsersRepository;
+import com.second.backend.service.UsersService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
