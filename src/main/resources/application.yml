@@ -1,0 +1,37 @@
+server:
+  port: 8081
+
+spring:
+  jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.MySQL8Dialect
+    defer-datasource-initialization: true
+
+  hibernate:
+    ddl-auto: update
+    naming:
+      physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    properties:
+      hibernate:
+        format_sql: true
+        default_batch_fetch_size: 1000
+
+  datasource:
+    url: jdbc:mysql://118.32.95.135:3306/shppingmal_db?useUnicode=true&characterEncoding=UTF-8
+    username: jje
+    password: wjdwndms12!
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  org:
+    hibernate:
+      type:
+        descriptor:
+          sql: trace
+
+  logging:
+    level:
+      org.springframework: DEBUG
+      com.github.userpage: DEBUG
