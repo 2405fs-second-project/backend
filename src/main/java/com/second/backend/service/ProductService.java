@@ -24,16 +24,20 @@ public class ProductService {
     public List<Product> getAllProducts() {
         return productRepository.findAll();
     }
+    // 특정 ID로 제품 조회 메서드
+    public Optional<Product> findProductById(Integer id) {
+        return productRepository.findById(id);
+    }
+    public Product getProductById(Integer productId) {
+        return productRepository.findById(productId).orElseThrow(() -> new RuntimeException("Product not found"));
+    }
 
     // 제품 저장 메서드
     public Product saveProduct(Product product) {
         return productRepository.save(product);
     }
 
-    // 특정 ID로 제품 조회 메서드
-    public Optional<Product> getProductById(Integer id) {
-        return productRepository.findById(id);
-    }
+
     // 파일 저장 메서드
     public String storeFile(MultipartFile file) throws IOException {
         // 상대 경로를 절대 경로로 변환

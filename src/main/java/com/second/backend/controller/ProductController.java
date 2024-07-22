@@ -1,7 +1,5 @@
 package com.second.backend.controller;
 import com.second.backend.model.Product;
-import java.util.Base64;
-import org.springframework.http.HttpHeaders;
 import com.second.backend.dto.ProductReturn;
 import com.second.backend.utils.ProductMapper;
 import com.second.backend.service.ProductService;

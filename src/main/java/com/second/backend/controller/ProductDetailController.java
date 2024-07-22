@@ -18,7 +18,7 @@ public class ProductDetailController {
     @GetMapping("/{id}")
     public ProductDetailResponse getProductById(@PathVariable Integer id) {
         // Optional에서 값을 추출하거나 예외를 던지도록 처리
-        Product product = productService.getProductById(id)
+        Product product = productService.findProductById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found with id " + id));
         return convertToProductDetailResponse(product);
     }
