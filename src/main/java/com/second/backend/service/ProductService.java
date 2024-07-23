@@ -11,6 +11,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+
 @Service
 public class ProductService {
 
@@ -57,5 +59,24 @@ public class ProductService {
         return "/img/" + filename;
     }
 
+    // 특정 물품명 검색
+    public List<Product> searchByName(String name) {
+        return productRepository.findByName(name);
+    }
 
+    // 특정 카테고리로 검색
+    public List<Product> findProductsByCategory(String gender, String kind) {
+        return productRepository.findByGenderAndKind(gender, kind);
+    }
+
+
+
+    // 쇼핑몰 조회하기 할 때 여성, 남성, 악세서리 모두 다 똑같이 물품 보여주기
+    public List<Product> getAll(boolean includeOutOfStock) {
+        List<String> categories = List.of("여성", "남성", "악세사리");
+        return productRepository.findAll().stream()
+                .filter(product -> categories.contains(product.getCategory()) &&
+                        (includeOutOfStock || product.getStock() > 0))
+                .collect(Collectors.toList());
+    }
 }

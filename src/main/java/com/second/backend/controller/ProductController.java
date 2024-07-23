@@ -74,6 +74,32 @@ public class ProductController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse(e.getMessage()));
         }
     }
+
+    // 특정 물품명 검색
+    @GetMapping("/search")
+    public ResponseEntity<List<ProductReturn>> searchByName(@RequestParam String name) {
+        List<Product> products = productService.searchByName(name);
+        List<ProductReturn> productReturns = ProductMapper.convertToProductReturnList(products);
+        return ResponseEntity.ok(productReturns);
+    }
+
+    // 특정 카테고리로 검색
+    @GetMapping("/category")
+    public ResponseEntity<List<ProductReturn>> searchProductsByCategory(@RequestParam String gender, @RequestParam String kind) {
+        List<Product> products = productService.findProductsByCategory(gender, kind);
+        List<ProductReturn> productReturns = ProductMapper.convertToProductReturnList(products);
+        return ResponseEntity.ok(productReturns);
+    }
+
+    // 쇼핑몰 조회하기 할 때 여성, 남성, 악세서리 모두 다 똑같이 물품을 보여주기
+    @GetMapping("/all")
+    public ResponseEntity<List<ProductReturn>> getAll(
+            @RequestParam(required = false, defaultValue = "true") boolean includeOutOfStock) {
+        List<Product> products = productService.getAll(includeOutOfStock);
+        List<ProductReturn> productReturns = ProductMapper.convertToProductReturnList(products);
+        return ResponseEntity.ok(productReturns);
+    }
+
     // 성공 응답 클래스
     public static class SuccessResponse {
         private String message;
@@ -107,11 +133,5 @@ public class ProductController {
             this.error = error;
         }
     }
-
-
-
-
-
-
 }
 
