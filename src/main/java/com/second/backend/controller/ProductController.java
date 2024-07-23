@@ -1,7 +1,5 @@
 package com.second.backend.controller;
 import com.second.backend.model.Product;
-import java.util.Base64;
-import org.springframework.http.HttpHeaders;
 import com.second.backend.dto.ProductReturn;
 import com.second.backend.utils.ProductMapper;
 import com.second.backend.service.ProductService;
@@ -11,19 +9,13 @@ import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.LocalDate;
 
 @RestController
-@RequestMapping("/api/products")
+@RequestMapping("/products/list")
 public class ProductController {
     @Autowired
     private ProductService productService;
-    private static final String UPLOAD_DIR = "uploads/";
 
     // 모든 제품 목록 조회
     @GetMapping
@@ -41,7 +33,7 @@ public class ProductController {
     }
 
     // 제품 저장
-    @PostMapping
+    @PostMapping("/post")
     public ResponseEntity<?> createProduct(
             @RequestParam("category_gender") String categoryGender,
             @RequestParam("category_kind") String categoryKind,
@@ -54,8 +46,8 @@ public class ProductController {
             @RequestParam(value = "file", required = false) MultipartFile file,
             @RequestParam(value = "description", required = false) String description){
         try {
-            String imageUrl = productService.saveImageFile(file);
-
+            String imageUrl = productService.storeFile(file);
+            System.out.println(imageUrl);
             LocalDate today = LocalDate.now();
             Integer stockInt = Integer.parseInt(stock);
             Integer priceInt = Integer.parseInt(price);
@@ -81,6 +73,32 @@ public class ProductController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse(e.getMessage()));
         }
     }
+
+    // 특정 물품명 검색
+    @GetMapping("/search")
+    public ResponseEntity<List<ProductReturn>> searchByName(@RequestParam String name) {
+        List<Product> products = productService.searchByName(name);
+        List<ProductReturn> productReturns = ProductMapper.convertToProductReturnList(products);
+        return ResponseEntity.ok(productReturns);
+    }
+
+    // 특정 카테고리로 검색
+    @GetMapping("/category")
+    public ResponseEntity<List<ProductReturn>> searchProductsByCategory(@RequestParam String gender, @RequestParam String kind) {
+        List<Product> products = productService.findProductsByCategory(gender, kind);
+        List<ProductReturn> productReturns = ProductMapper.convertToProductReturnList(products);
+        return ResponseEntity.ok(productReturns);
+    }
+
+    // 쇼핑몰 조회하기 할 때 여성, 남성, 악세서리 모두 다 똑같이 물품을 보여주기
+    @GetMapping("/all")
+    public ResponseEntity<List<ProductReturn>> getAll(
+            @RequestParam(required = false, defaultValue = "true") boolean includeOutOfStock) {
+        List<Product> products = productService.getAll(includeOutOfStock);
+        List<ProductReturn> productReturns = ProductMapper.convertToProductReturnList(products);
+        return ResponseEntity.ok(productReturns);
+    }
+
     // 성공 응답 클래스
     public static class SuccessResponse {
         private String message;
@@ -113,64 +131,6 @@ public class ProductController {
         public void setError(String error) {
             this.error = error;
         }
-    }
-    private String saveImageFile(MultipartFile file) throws IOException {
-        if (file != null && !file.isEmpty()) {
-            File uploadDir = new File(UPLOAD_DIR);
-            if (!uploadDir.exists()) {
-                uploadDir.mkdirs();
-            }
-
-            String fileName = file.getOriginalFilename();
-            String filePath = UPLOAD_DIR + fileName;
-            Path path = Paths.get(filePath);
-
-            Files.write(path, file.getBytes());
-            return "/api/products/image/" + fileName;
-        }
-        return null;
-    }
-
-    @GetMapping("/image/{filename}")
-    public ResponseEntity<String> getImage(@PathVariable String filename) throws IOException {
-        String filePath = UPLOAD_DIR + filename;
-        String base64Image = encodeImageToBase64(filePath);
-
-        if (base64Image != null) {
-            String mimeType = Files.probeContentType(Paths.get(filePath)); // MIME 타입을 동적으로 결정
-            return ResponseEntity.ok()
-                    .header(HttpHeaders.CONTENT_TYPE, mimeType != null ? mimeType : "image/jpeg")
-                    .body("data:" + (mimeType != null ? mimeType : "image/jpeg") + ";base64," + base64Image);
-        } else {
-            throw new IOException("Could not read file: " + filename);
-        }
-    }
-
-    private String encodeImageToBase64(String filePath) {
-        try {
-            Path path = Paths.get(filePath);
-            byte[] imageBytes = Files.readAllBytes(path);
-            return Base64.getEncoder().encodeToString(imageBytes); // Java 표준 Base64 사용
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    // 특정 물품명 검색
-    @GetMapping("/search")
-    public List<Product> searchProductsByName(
-            @RequestParam String name,
-            @RequestParam(required = false, defaultValue = "true") boolean includeOutofstock) {
-        return productService.searchProductsByName(name, includeOutofstock);
-    }
-
-    // 특정 카테고리 검색
-    @GetMapping("/category")
-    public List<Product> searchProductsByCategory(
-            @RequestParam String category,
-            @RequestParam(required = false, defaultValue = "true") boolean includeOutOfStock) {
-        return productService.searchProductsByCategory(category, includeOutOfStock);
     }
 }
 

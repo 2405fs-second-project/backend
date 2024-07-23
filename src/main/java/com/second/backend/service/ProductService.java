@@ -2,28 +2,36 @@ package com.second.backend.service;
 import com.second.backend.model.Product;
 import com.second.backend.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
 import org.springframework.web.multipart.MultipartFile;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.io.File;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
 @Service
 public class ProductService {
 
     @Autowired
     private ProductRepository productRepository;
 
-    // 업로드 디렉토리 경로
-    private static final String UPLOAD_DIR = "uploads/";
+    @Value("${file.upload-dir}")
+    private String uploadDir;
 
     // 제품 목록 조회 메서드
     public List<Product> getAllProducts() {
         return productRepository.findAll();
+    }
+    // 특정 ID로 제품 조회 메서드
+    public Optional<Product> findProductById(Integer id) {
+        return productRepository.findById(id);
+    }
+    public Product getProductById(Integer productId) {
+        return productRepository.findById(productId).orElseThrow(() -> new RuntimeException("Product not found"));
     }
 
     // 제품 저장 메서드
@@ -31,53 +39,44 @@ public class ProductService {
         return productRepository.save(product);
     }
 
+
     // 파일 저장 메서드
-    public String saveImageFile(MultipartFile file) throws IOException {
-        if (file != null && !file.isEmpty()) {
-            // 업로드할 디렉토리 경로 생성
-            File uploadDir = new File(UPLOAD_DIR);
-            if (!uploadDir.exists()) {
-                uploadDir.mkdirs(); // 디렉토리가 존재하지 않으면 생성
-            }
+    public String storeFile(MultipartFile file) throws IOException {
+        // 상대 경로를 절대 경로로 변환
+        Path uploadPath = Paths.get(uploadDir).toAbsolutePath().normalize();
 
-            // 파일의 실제 경로 설정
-            String fileName = file.getOriginalFilename();
-            Path path = Paths.get(UPLOAD_DIR + fileName);
-
-            // 파일을 저장하고 경로를 URL로 반환
-            Files.write(path, file.getBytes());
-            return "/api/products/image/" + fileName; // 예시 URL 반환
+        // 디렉토리가 없으면 생성
+        if (!Files.exists(uploadPath)) {
+            Files.createDirectories(uploadPath);
         }
-        return null; // 파일이 없을 경우 null 반환
+
+        // 파일 저장
+        String filename = file.getOriginalFilename();
+        Path filePath = uploadPath.resolve(filename);
+        file.transferTo(filePath.toFile());
+
+        // 파일의 URL 반환 (웹서버의 파일 접근 경로)
+        return "/img/" + filename;
     }
 
-    // 이미지 다운로드 기능
-    public Resource downloadFile(String fileUrl) throws IOException {
-        Path path = Paths.get(UPLOAD_DIR + fileUrl);
-        Resource resource = new UrlResource(path.toUri());
-        if (!resource.exists() || !resource.isReadable()) {
-            throw new IOException("Could not read file: " + fileUrl);
-        }
-        return resource;
+    // 특정 물품명 검색
+    public List<Product> searchByName(String name) {
+        return productRepository.findByName(name);
     }
 
-    // 특정 물품명 검색 메소드 추가
-    public List<Product> searchProductsByName(String name, boolean includeOutOfStock) {
-        if (includeOutOfStock) {
-            return productRepository.findByName(name);
-        } else {
-            return productRepository.findByNameAndStock(name, 0);
-        }
+    // 특정 카테고리로 검색
+    public List<Product> findProductsByCategory(String gender, String kind) {
+        return productRepository.findByGenderAndKind(gender, kind);
     }
 
-    // 특정 카테고리 검색 메소드 추가
-    public List<Product> searchProductsByCategory(String category, boolean includeOutOfStock) {
-        if (includeOutOfStock) {
-            return productRepository.findByCategory(category);
-        } else {
-            return productRepository.findByCategoryAndStock(category, 0);
-        }
+
+
+    // 쇼핑몰 조회하기 할 때 여성, 남성, 악세서리 모두 다 똑같이 물품 보여주기
+    public List<Product> getAll(boolean includeOutOfStock) {
+        List<String> categories = List.of("여성", "남성", "악세사리");
+        return productRepository.findAll().stream()
+                .filter(product -> categories.contains(product.getCategory()) &&
+                        (includeOutOfStock || product.getStock() > 0))
+                .collect(Collectors.toList());
     }
 }
-
-

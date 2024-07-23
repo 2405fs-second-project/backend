@@ -1,8 +1,6 @@
 package com.second.backend.utils;
 import com.second.backend.dto.ProductReturn;
 import com.second.backend.model.Product;
-
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 public class ProductMapper {
