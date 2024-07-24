@@ -6,6 +6,7 @@ import lombok.*;
 import java.time.LocalDateTime;
 import java.util.Set;
 
+@Getter
 @Setter
 @NoArgsConstructor(access =  AccessLevel.PROTECTED)
 @AllArgsConstructor
@@ -34,27 +35,5 @@ public class Orders {
     @OneToMany(mappedBy = "order")
     private Set<OrderItems> orderItems;
 
-    public Integer getId() {
-        return id;
-    }
 
-    public Users getUser() {
-        return user;
-    }
-
-    public Integer getTotal_price() {
-        return total_price;
-    }
-
-    public LocalDateTime getOrder_date() {
-        return order_date;
-    }
-
-    public String getOrder_number() {
-        return order_number;
-    }
-
-    public Set<OrderItems> getOrderItems() {
-        return orderItems;
-    }
 }
