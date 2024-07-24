@@ -52,6 +52,10 @@ public class Product {
     @Column(name = "seller_id")
     private Integer seller_id;
 
+    @Column(name = "category", length = 50, nullable = false)
+    private String category;
+
+
     @PrePersist
     public void prePersist() {
         this.listedDate = LocalDate.now(); // 저장 전에 listedDate를 현재 날짜로 설정
@@ -177,4 +181,12 @@ public class Product {
     public void setSeller_id(Integer seller_id) {
         this.seller_id = seller_id;
     }
+
+    public String getCategory() {
+        return category;
+    }
+//
+//    public void setCategory(String category) {
+//        this.category = category;
+//    }
 }
