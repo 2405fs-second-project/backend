@@ -1,7 +1,8 @@
-package com.github.login.controller;
+package com.second.backend.controller;
 
-import com.github.login.model.User;
-import com.github.login.service.UserService;
+import com.second.backend.dto.AddUserRequest;
+import com.second.backend.model.Users;
+import com.second.backend.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,8 +17,9 @@ public class UserController {
     private UserService userService;
 
     @PostMapping("/register")
-    public ResponseEntity<String> registerUser(@RequestBody User user) {
+    public ResponseEntity<String> registerUser(@RequestBody AddUserRequest addUserRequest) {
         try {
+            Users user = addUserRequest.toEntity();
             userService.registerUser(user);
             return ResponseEntity.ok("User registered successfully");
         } catch (Exception e) {
@@ -27,7 +29,7 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> loginUser(@RequestBody User user) {
+    public ResponseEntity<String> loginUser(@RequestBody Users user) {
         try {
             if (userService.loginUser(user)) {
                 return ResponseEntity.ok("Login successful");
@@ -37,8 +39,6 @@ public class UserController {
         } catch (Exception e) {
             e.printStackTrace(); // 예외를 콘솔에 기록
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error logging in");
-
         }
     }
-
 }
