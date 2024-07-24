@@ -8,8 +8,8 @@ import lombok.Setter;
 @Setter
 @Data
 public class UpdateUserRequest {
-    private String update_name;
-    private String update_phone;
-    private String update_address;
-    private String shipping_info;
+    private String updateName;
+    private String updatePhone;
+    private String updateAddress;
+    private String shippingInfo;
 }

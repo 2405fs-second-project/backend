@@ -3,9 +3,9 @@ package com.github.login.model;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import javax.persistence.*;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotEmpty;
+import jakart.persistence.*;
+import jakart.validation.constraints.Email;
+import jakart.validation.constraints.NotEmpty;
 import java.util.Collection;
 import java.util.Collections;
 
