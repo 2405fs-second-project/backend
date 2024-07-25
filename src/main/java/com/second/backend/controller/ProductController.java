@@ -4,11 +4,11 @@ import com.second.backend.dto.ProductDetailResponse;
 import com.second.backend.dto.ProductResponse;
 import com.second.backend.service.ProductService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -20,16 +20,24 @@ public class ProductController {
     private final ProductService productService;
 
     @GetMapping("/{gender}")
-    public ResponseEntity<List<ProductResponse>> getProductsByGender(@PathVariable String gender) {
-        List<ProductResponse> products = productService.findProductsByGender(gender);
+    public ResponseEntity<Slice<ProductResponse>> getProductsByGender(
+            @PathVariable String gender,
+            @RequestParam(defaultValue = "0") Integer page,
+            @RequestParam(defaultValue = "10") Integer size) {
+
+        Pageable pageable = PageRequest.of(page, size);
+        Slice<ProductResponse> products = productService.findProductsByGender(gender, pageable);
         return ResponseEntity.ok(products);
     }
 
     @GetMapping("/{gender}/{kind}")
-    public ResponseEntity<List<ProductResponse>> getProductsByGenderAndKind(
+    public ResponseEntity<Slice<ProductResponse>> getProductsByGenderAndKind(
             @PathVariable String gender,
-            @PathVariable String kind) {
-        List<ProductResponse> products = productService.findProductsByGenderAndKind(gender, kind);
+            @PathVariable String kind,
+            @RequestParam(defaultValue = "0") Integer page,
+            @RequestParam(defaultValue = "10") Integer size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Slice<ProductResponse> products = productService.findProductsByGenderAndKind(gender, kind, pageable );
         return ResponseEntity.ok(products);
     }
     @GetMapping("/detail/{productid}")

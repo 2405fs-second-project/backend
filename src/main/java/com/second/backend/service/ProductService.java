@@ -7,6 +7,8 @@ import com.second.backend.model.ProductSizes;
 import com.second.backend.repository.ProductRepository;
 import com.second.backend.repository.ProductSizesRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 
 
@@ -21,31 +23,28 @@ public class ProductService {
     private final ProductSizesRepository productSizesRepository;
 
     //1. gender별 물품 조회 메서드
-    public List<ProductResponse> findProductsByGender(String gender) {
-        List<Product> products = productRepository.findByGender(gender);
+    public Slice<ProductResponse> findProductsByGender(String gender, Pageable pageable) {
+        Slice<Product> productSlice = productRepository.findByGender(gender, pageable);
 
-        return products.stream()
-                .map(product -> new ProductResponse(
-                        product.getId(),
-                        product.getName(),
-                        product.getColor(),
-                        product.getPrice(),
-                        product.getFileUrl()))
-                .collect(Collectors.toList());
+        return productSlice.map(product -> new ProductResponse(
+                product.getId(),
+                product.getName(),
+                product.getColor(),
+                product.getPrice(),
+                product.getFileUrl()));
     }
 
-    //2.gender-kind별 물품 조회 메서드
-    public List<ProductResponse> findProductsByGenderAndKind(String gender, String kind) {
-        List<Product> products = productRepository.findByGenderAndKind(gender, kind);
 
-        return products.stream()
-                .map(product -> new ProductResponse(
+    //2.gender-kind별 물품 조회 메서드
+    public Slice<ProductResponse> findProductsByGenderAndKind(String gender, String kind, Pageable pageable) {
+        Slice<Product> productSlice = productRepository.findByGenderAndKind(gender, kind, pageable);
+
+        return productSlice.map(product -> new ProductResponse(
                         product.getId(),
                         product.getName(),
                         product.getColor(),
                         product.getPrice(),
-                        product.getFileUrl()))
-                .collect(Collectors.toList());
+                        product.getFileUrl()));
     }
 
     //3.물품상세 조회 메서드

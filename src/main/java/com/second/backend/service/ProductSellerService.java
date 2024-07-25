@@ -9,6 +9,9 @@ import com.second.backend.repository.ProductSizesRepository;
 import com.second.backend.repository.UsersRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,10 +32,12 @@ public class ProductSellerService {
     //1.판매자는 자신이 현재 판매중인 전체 물품 조회
     public List<ProductSellerDTO> findProductsBySellerId(Integer sellerId) {
         //step1. sellerid와 연결된 Product id를 Product에서 찾습니다.
-        List<Product> products = productRepository.findProductByUsersId(sellerId);
+        Pageable pageable = PageRequest.of(0, 20);
+        Page<Product> productPage = productRepository.findByUsersId(sellerId, pageable);
+
 
         //step2.Product id를 리스트 형태로 수집합니다.
-        List<Integer> productIds = products.stream()
+        List<Integer> productIds =  productPage.stream()
                 .map(Product::getId)
                 .toList();
 
@@ -44,7 +49,7 @@ public class ProductSellerService {
                 .collect(Collectors.groupingBy(ps -> ps.getProduct().getId()));
 
         //step4. Product와 sizesStock를 결합하여 DTO/ProductSellerResponse로 변환합니다.
-        return products.stream()
+        return  productPage.stream()
                 .map(product -> {
                     List<ProductSizes> sizesForProduct = productSizesMap.getOrDefault(product.getId(), List.of());
                     // 사이즈와 재고 정보를 맵으로 변환
