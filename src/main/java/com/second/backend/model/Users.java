@@ -36,7 +36,7 @@ public class Users {
     @Enumerated(EnumType.STRING)
     private Gender gender;
 
-    @Column(name = "profile_picture_url", columnDefinition = "TEXT DEFAULT ''")
+    @Column(name = "profile_picture_url", columnDefinition = "TEXT")
     private String profile_picture_url;
 
     @Column(name = "about_me", length = 100, columnDefinition = "VARCHAR(100) DEFAULT ''")
