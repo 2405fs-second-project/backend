@@ -29,14 +29,14 @@ public class Users {
     @Column(name = "phone_num", nullable = false, length = 20)
     private String phone_num;
 
-    @Column(name = "address", nullable = false, length = 100)
-    private String address;
+    @Column(name = "address", nullable = true, length = 100) // nullable 설정 및 기본값 설정
+    private String address = "";
 
-    @Column(name = "gender", nullable = false)
+    @Column(name = "gender", nullable = true) // 성별은 nullable 설정 및 기본값 설정
     @Enumerated(EnumType.STRING)
-    private Gender gender;
+    private Gender gender = Gender.UNKNOWN;
 
-    @Column(name = "profile_picture_url", columnDefinition = "TEXT")
+    @Column(name = "profile_picture_url", columnDefinition = "TEXT DEFAULT ''")
     private String profile_picture_url;
 
     @Column(name = "about_me", length = 100, columnDefinition = "VARCHAR(100) DEFAULT ''")
@@ -57,6 +57,7 @@ public class Users {
 
     public enum Gender {
         MALE,
-        FEMALE
+        FEMALE,
+        UNKNOWN // 기본값으로 추가
     }
 }

@@ -57,6 +57,8 @@ public class Product {
     @Column(name = "ListedDate")
     private LocalDate listedDate;
 
+    @Column(name = "category", length = 50, nullable = false)
+    private String category;
 
     @PrePersist
     public void prePersist() {

@@ -2,6 +2,7 @@ package com.second.backend.service;
 
 import com.second.backend.dto.ProductDetailResponse;
 import com.second.backend.dto.ProductResponse;
+import com.second.backend.dto.ProductReturn;
 import com.second.backend.model.Product;
 import com.second.backend.model.ProductSizes;
 import com.second.backend.repository.ProductRepository;
@@ -72,4 +73,47 @@ public class ProductService {
                 })
                 .collect(Collectors.toList());
     }
+
+    // 특정 물품명 검색 내부 메서드
+    public List<ProductReturn> searchByNameInternal(String name) {
+        List<Product> products = productRepository.findByName(name);
+        return products.stream()
+                .map(product -> {
+                    ProductReturn productReturn = new ProductReturn();
+                    productReturn.setCategory_gender(product.getGender());
+                    productReturn.setCategory_kind(product.getKind());
+                    productReturn.setName(product.getName());
+                    productReturn.setColor(product.getColor());
+                    productReturn.setFullname(product.getFullName());
+                    productReturn.setCode(product.getCode());
+                    productReturn.setPrice(product.getPrice());
+                    productReturn.setFileUrl(product.getFileUrl());
+                    // 필요한 경우 다른 필드도 추가할 수 있음
+                    return productReturn;
+                })
+                .collect(Collectors.toList());
+    }
+
+
+
+    // 특정 카테고리로 검색
+    public List<ProductReturn> searchByGenderAndKind(String gender, String kind) {
+        List<Product> products = productRepository.findByCategory(gender, kind);
+        return products.stream()
+                .map(product -> {
+                    ProductReturn productReturn = new ProductReturn();
+                    productReturn.setCategory_gender(gender); // gender를 변수로 설정
+                    productReturn.setCategory_kind(kind);     // kind를 변수로 설정
+                    productReturn.setName(product.getName());
+                    productReturn.setColor(product.getColor());
+                    productReturn.setFullname(product.getFullName());
+                    productReturn.setCode(product.getCode());
+                    productReturn.setPrice(product.getPrice());
+                    productReturn.setFileUrl(product.getFileUrl());
+                    // 필요한 경우 다른 필드도 추가할 수 있음
+                    return productReturn;
+                })
+                .collect(Collectors.toList());
+    }
+
 }

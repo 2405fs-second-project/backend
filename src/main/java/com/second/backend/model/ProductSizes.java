@@ -25,7 +25,6 @@ public class ProductSizes {
     @Column(name = "option_size", length = 50)
     private String size;
 
-
     @Column(name = "stock", nullable = false)
     private Integer stock;
 
