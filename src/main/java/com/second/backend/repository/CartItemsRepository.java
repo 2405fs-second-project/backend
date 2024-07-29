@@ -8,10 +8,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface CartItemsRepository extends JpaRepository<CartItems, Integer> {
-    CartItems findByCartAndProductAndProductSizes(Carts cart, Product product, ProductSizes productSizes);
+    Optional<CartItems> findByCartAndProductAndProductSizes(Carts cart, Product product, ProductSizes productSizes);
     List<CartItems> findByCart(Carts cart);
     List<CartItems> findByUserId(Integer userId);
 

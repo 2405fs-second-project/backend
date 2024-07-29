@@ -72,26 +72,31 @@ public class UsersService {
     }
 
     public String storeFile(MultipartFile file) throws IOException {
+        // 파일 저장 경로 설정
         Path uploadPath = Paths.get(uploadDir).toAbsolutePath().normalize();
 
+        // 디렉토리가 없으면 생성
         if (!Files.exists(uploadPath)) {
             Files.createDirectories(uploadPath);
         }
 
+        // 파일 이름 및 저장 경로 설정
         String filename = file.getOriginalFilename();
         if (filename == null) {
-            throw new IOException("Filename is missing");
+            throw new IOException("파일 이름이 없습니다.");
         }
-
-        // 파일 이름을 UUID로 변경하여 중복 문제 방지
         String uniqueFilename = UUID.randomUUID().toString() + "-" + filename;
         Path filePath = uploadPath.resolve(uniqueFilename);
-        file.transferTo(filePath.toFile());
 
-        // 파일 URL을 반환
+        // 파일 저장
+        try {
+            file.transferTo(filePath.toFile());
+        } catch (IOException e) {
+            throw new IOException("파일 저장 중 오류가 발생했습니다.", e);
+        }
+
+        // 저장된 파일의 URL 반환
         return "/img/" + uniqueFilename;
     }
 
 }
-
-

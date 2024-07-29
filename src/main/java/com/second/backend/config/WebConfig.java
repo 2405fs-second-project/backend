@@ -23,4 +23,3 @@ public class WebConfig implements WebMvcConfigurer {
                 .addResourceLocations("file:/System/Volumes/Data/path/to/uploadDir/");
     }
 }
-

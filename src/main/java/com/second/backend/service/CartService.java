@@ -23,38 +23,45 @@ public class CartService { //장바구니 기능 제공
 
     @Transactional
     public String addToCart(CartRequest cartRequest) {
-        Optional<Users> optionalUser = usersRepository.findById(cartRequest.getUserId()); //사용자 확인
+        // 사용자 확인
+        Optional<Users> optionalUser = usersRepository.findById(cartRequest.getUserId());
         if (optionalUser.isEmpty()) {
             return "사용자가 없습니다.";
         }
         Users user = optionalUser.get();
 
-        Optional<Carts> optionalCart = cartRepository.findByUserId(cartRequest.getUserId()); //장바구니 확인 및 생성
+        // 장바구니 확인 및 생성
+        Optional<Carts> optionalCart = cartRepository.findByUserId(cartRequest.getUserId());
         Carts cart = optionalCart.orElseGet(() -> {
             Carts newCart = new Carts();
             newCart.setUserId(user.getId());
             return cartRepository.save(newCart);
         });
 
-        Optional<Product> optionalProduct = productRepository.findById(cartRequest.getProductId()); //상품 확인
+        // 상품 확인
+        Optional<Product> optionalProduct = productRepository.findById(cartRequest.getProductId());
         if (optionalProduct.isEmpty()) {
             return "판매되는 상품이 아닙니다.";
         }
         Product product = optionalProduct.get();
 
-        ProductSizes productSizes = productSizesRepository.findByProductIdAndSize( //상품사이즈 확인
+        // 상품 사이즈 확인
+        Optional<ProductSizes> optionalProductSizes = productSizesRepository.findOptionalByProductIdAndSize(
                 cartRequest.getProductId(),
                 cartRequest.getSize()
         );
-        if (productSizes == null) {
+        if (optionalProductSizes.isEmpty()) {
             return "해당 사이즈의 상품이 없습니다.";
         }
+        ProductSizes productSizes = optionalProductSizes.get();
 
-        CartItems existingCartItem = cartItemsRepository.findByCartAndProductAndProductSizes( //장바구니 아이템 업데이트
+        // 장바구니 아이템 업데이트
+        Optional<CartItems> optionalCartItem = cartItemsRepository.findByCartAndProductAndProductSizes(
                 cart, product, productSizes
         );
 
-        if (existingCartItem != null) {
+        if (optionalCartItem.isPresent()) {
+            CartItems existingCartItem = optionalCartItem.get();
             existingCartItem.setQuantity(existingCartItem.getQuantity() + cartRequest.getQuantity());
             cartItemsRepository.save(existingCartItem);
         } else {

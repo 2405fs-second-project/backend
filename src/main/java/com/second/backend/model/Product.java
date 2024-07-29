@@ -1,16 +1,17 @@
 package com.second.backend.model;
-import jakarta.persistence.Table;
-import jakarta.persistence.*;
-import java.time.LocalDate;
 
 import lombok.*;
 
+import jakarta.persistence.*;
+import java.time.LocalDate;
+
 @Setter
 @Getter
-@Entity //JPA Entity 클래스임을 나타내는 어노테이션입니다.
-@Table(name = "product") //데이터베이스에서 매핑할 테이블 이름을 지정합니다.
-@Data // 롬복 애노테이션: Getter, Setter, toString, hashCode 등을 자동 생성합니다.
-@NoArgsConstructor // 롬복 애노테이션: 매개변수 없는 생성자를 자동 생성합니다.
+@Entity
+@Table(name = "product")
+@NoArgsConstructor
+@AllArgsConstructor // 추가
+@Builder
 public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
