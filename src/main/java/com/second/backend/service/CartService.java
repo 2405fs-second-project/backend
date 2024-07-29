@@ -1,127 +1,151 @@
-//package com.second.backend.service;
-//import com.second.backend.dto.CartReponse;
-//import com.second.backend.model.Product;
-//import com.second.backend.model.Users;
-//import com.second.backend.dto.CartRequest;
-//import com.second.backend.model.Carts;
-//import com.second.backend.model.CartItems;
-//import com.second.backend.model.ProductSizes;
-//import com.second.backend.repository.CartItemsRepository;
-//import com.second.backend.repository.CartRepository;
-//import com.second.backend.repository.ProductRepository;
-//import com.second.backend.repository.UsersRepository;
-//import com.second.backend.repository.ProductSizesRepository;
-//import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.stereotype.Service;
-//
-//import java.util.ArrayList;
-//import java.util.Collections;
-//import java.util.List;
-//import java.util.Optional;
-//import java.util.concurrent.CancellationException;
-//
-//@Service
-//public class CartService {
-//    @Autowired
-//    private UsersRepository usersRepository;
-//
-//    @Autowired
-//    private CartRepository cartRepository;
-//
-//    @Autowired
-//    private CartItemsRepository cartItemsRepository;
-//
-//    @Autowired
-//    private ProductRepository productRepository;
-//
-//    @Autowired
-//    private ProductSizesRepository productSizesRepository;
-//
-//    public String addToCart(CartRequest cartRequest) {
-//        // 사용자 조회
-//        Optional<Users> optionalUser = usersRepository.findById(cartRequest.getUserId());
-//        if (optionalUser.isEmpty()) {
-//            return "사용자가 없습니다.";
-//        }
-//        Users users = optionalUser.get();
-//
-//        // 장바구니 조회 또는 생성
-//        Carts carts = cartRepository.findByUsersId(cartRequest.getUserId());
-//        if (carts == null) {
-//            carts = new Carts();
-//            carts.setUser(users);
-//            cartRepository.save(carts);
-//        }
-//
-//        // 상품 검증
-//        Optional<Product> optionalProduct = productRepository.findById(cartRequest.getProductId());
-//        if (optionalProduct.isEmpty()) {
-//            return "판매되는 상품이 아닙니다.";
-//        }
-//        Product product = optionalProduct.get();
-//
-//        // 사이즈 검증
-//        ProductSizes productSizes = productSizesRepository.findByProductIdAndSize(
-//                cartRequest.getProductId(),
-//                cartRequest.getSize()
-//        );
-//        if (productSizes == null) {
-//            return "해당 사이즈의 상품이 없습니다.";
-//        }
-//
-//        // 장바구니 아이템 검색
-//        CartItems existingCartItem = cartItemsRepository.findByCartsAndProductAndProductSizes(
-//                carts, product, productSizes
-//        );
-//
-//        if (existingCartItem != null) {
-//            // 기존 아이템이 있으면 수량 업데이트
-//            existingCartItem.setQuantity(existingCartItem.getQuantity() + cartRequest.getQuantity());
-//            cartItemsRepository.save(existingCartItem);
-//        } else {
-//            // 새 아이템 추가
-//            CartItems newCartItem = new CartItems();
-//            newCartItem.setCarts(carts);
-//            newCartItem.setUserId(users.getId());
-//            newCartItem.setProduct(product);
-//            newCartItem.setProductSizes(productSizes);  // 수정된 부분
-//            newCartItem.setQuantity(cartRequest.getQuantity());
-//            cartItemsRepository.save(newCartItem);
-//        }
-//
-//        return "장바구니에 추가되었습니다.";}
-//
-//    public List<CartReponse> getCartItemsByUserId(Integer userId) {
-//        // 1. 사용자 ID를 통해 카트를 조회하여 카트 ID를 얻는다
-//        Carts cart = cartRepository.findByUsersId(userId);
-//        if (cart == null) {
-//            return Collections.emptyList(); // 카트가 없는 경우 빈 리스트 반환
-//        }
-//
-//        // 2. 카트 ID를 통해 카트 아이템을 조회한다
-//        List<CartItems> cartItemsList = cartItemsRepository.findByCarts(cart); // 수정된 부분
-//
-//        List<CartReponse> responses = new ArrayList<>();
-//        for (CartItems cartItems : cartItemsList) {
-//            Product product = cartItems.getProduct();
-//            ProductSizes productSizes = cartItems.getProductSizes(); // 수정된 부분
-//
-//            CartReponse response = new CartReponse();
-//            response.setId(cartItems.getId());
-//            response.setName(product.getName());
-//            response.setColor(product.getColor());
-//            response.setSize(productSizes.getSize()); // 수정된 부분
-//            response.setQuantity(cartItems.getQuantity());
-//            response.setPrice(product.getPrice());
-//
-//            // 파일 경로 수정
-//            String filePath = product.getFileUrl().replace("/img/", "");
-//            response.setFileUrl(filePath);
-//
-//            responses.add(response);
-//        }
-//
-//        return responses;
-//    }
-//
-//}
+package com.second.backend.service;
+
+import com.second.backend.dto.CartItemUpdateRequest;
+import com.second.backend.dto.CartRequest;
+import com.second.backend.dto.CartResponse;
+import com.second.backend.model.*;
+import com.second.backend.repository.*;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.*;
+
+@RequiredArgsConstructor
+@Service
+public class CartService { //장바구니 기능 제공
+
+    private final UsersRepository usersRepository;
+    private final CartRepository cartRepository;
+    private final CartItemsRepository cartItemsRepository;
+    private final ProductRepository productRepository;
+    private final ProductSizesRepository productSizesRepository;
+
+    @Transactional
+    public String addToCart(CartRequest cartRequest) {
+        // 사용자 확인
+        Optional<Users> optionalUser = usersRepository.findById(cartRequest.getUserId());
+        if (optionalUser.isEmpty()) {
+            return "사용자가 없습니다.";
+        }
+        Users user = optionalUser.get();
+
+        // 장바구니 확인 및 생성
+        Optional<Carts> optionalCart = cartRepository.findByUserId(cartRequest.getUserId());
+        Carts cart = optionalCart.orElseGet(() -> {
+            Carts newCart = new Carts();
+            newCart.setUserId(user.getId());
+            return cartRepository.save(newCart);
+        });
+
+        // 상품 확인
+        Optional<Product> optionalProduct = productRepository.findById(cartRequest.getProductId());
+        if (optionalProduct.isEmpty()) {
+            return "판매되는 상품이 아닙니다.";
+        }
+        Product product = optionalProduct.get();
+
+        // 상품 사이즈 확인
+        Optional<ProductSizes> optionalProductSizes = productSizesRepository.findOptionalByProductIdAndSize(
+                cartRequest.getProductId(),
+                cartRequest.getSize()
+        );
+        if (optionalProductSizes.isEmpty()) {
+            return "해당 사이즈의 상품이 없습니다.";
+        }
+        ProductSizes productSizes = optionalProductSizes.get();
+
+        // 장바구니 아이템 업데이트
+        Optional<CartItems> optionalCartItem = cartItemsRepository.findByCartAndProductAndProductSizes(
+                cart, product, productSizes
+        );
+
+        if (optionalCartItem.isPresent()) {
+            CartItems existingCartItem = optionalCartItem.get();
+            existingCartItem.setQuantity(existingCartItem.getQuantity() + cartRequest.getQuantity());
+            cartItemsRepository.save(existingCartItem);
+        } else {
+            CartItems newCartItem = new CartItems();
+            newCartItem.setCart(cart);
+            newCartItem.setProduct(product);
+            newCartItem.setProductSizes(productSizes);
+            newCartItem.setQuantity(cartRequest.getQuantity());
+            newCartItem.setUserId(user.getId());
+            cartItemsRepository.save(newCartItem);
+        }
+
+        return "장바구니에 추가되었습니다.";
+    }
+
+    public List<CartResponse> getCartItemsByUserId(Integer userId) {
+        Optional<Carts> optionalCart = cartRepository.findByUserId(userId); //장바구니 조회
+        if (optionalCart.isEmpty()) {
+            return Collections.emptyList();
+        }
+        Carts cart = optionalCart.get();
+
+        List<CartItems> cartItemsList = cartItemsRepository.findByCart(cart);
+
+        List<CartResponse> responses = new ArrayList<>(); //아이템 정보구성
+        for (CartItems cartItems : cartItemsList) {
+            Product product = cartItems.getProduct();
+            ProductSizes productSizes = cartItems.getProductSizes();
+
+            CartResponse response = new CartResponse();
+            response.setId(cartItems.getId());
+            response.setName(product.getName());
+            response.setColor(product.getColor());
+            response.setSize(productSizes.getSize());
+            response.setQuantity(cartItems.getQuantity());
+            response.setPrice(product.getPrice());
+
+            String filePath = product.getFileUrl().replace("/img/", "");
+            response.setFileUrl(filePath);
+
+            responses.add(response);
+        }
+
+        return responses;
+    }
+
+    @Transactional
+    public CartItems updateCartItemQuantity(CartItemUpdateRequest request) { //장바구니 아이템의 수량 업데이트
+        Optional<CartItems> cartItemOptional = cartItemsRepository.findById(request.getItemId());
+
+        if (cartItemOptional.isPresent()) {
+            CartItems cartItem = cartItemOptional.get();
+            cartItem.setQuantity(request.getQuantity());
+            cartItemsRepository.save(cartItem);
+            return cartItem; // 업데이트된 장바구니 아이템을 반환
+        } else {
+            return null; // 아이템을 찾지 못했을 경우 null 반환
+        }
+    }
+
+    @Transactional
+    public String transferCartForLoggedInUser(Integer previousUserId, Integer newUserId) { //로그인 전 비회원의 장바구니 새로운 사용자 계정으로 이전
+        Optional<Carts> optionalPreviousCart = cartRepository.findByUserId(previousUserId);
+        if (optionalPreviousCart.isEmpty()) {
+            return "이전 사용자 장바구니가 없습니다.";
+        }
+        Carts previousCart = optionalPreviousCart.get();
+
+        Optional<Carts> optionalNewCart = cartRepository.findByUserId(newUserId);
+        Carts newCart = optionalNewCart.orElseGet(() -> { //orElseGet은 optional 클래스에서 제공하는 메서드로 비었을때 대체 값을 생성하거나 반환하는데 사용
+            Carts cart = new Carts();
+            cart.setUserId(newUserId);
+            return cartRepository.save(cart);
+        });
+
+        List<CartItems> cartItems = previousCart.getCartItems();
+        for (CartItems item : cartItems) {
+            item.setCart(newCart);
+            item.setUserId(newUserId);
+        }
+
+        cartItemsRepository.saveAll(cartItems);
+        cartRepository.delete(previousCart);
+
+        return "장바구니가 새로운 사용자 계정으로 이전되었습니다.";
+    }
+}

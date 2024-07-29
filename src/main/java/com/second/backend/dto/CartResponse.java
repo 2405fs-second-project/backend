@@ -1,17 +1,18 @@
 package com.second.backend.dto;
 
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class CartRequest {
-    private Integer userId;
-    private Integer productId;
+public class CartResponse {
+    private Integer id;
+    private String fileUrl;
+    private String name;
+    private String color;
     private String size;
     private Integer quantity;
+    private Integer price;
 }

@@ -3,9 +3,9 @@ package com.second.backend.dto;
 import com.second.backend.model.Orders;
 import lombok.*;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.time.LocalDateTime;
 
+@Setter
 @Getter
 @EqualsAndHashCode
 @NoArgsConstructor
@@ -13,18 +13,9 @@ import java.util.List;
 @Data
 public class ViewOrderResponse {
 
-    private Integer id;
     private Integer userId;
     private Integer totalPrice;
     private String orderNumber;
-    private List<ViewOrderItemsResponse> orderItems;
+    private LocalDateTime orderDate;
 
-
-    public ViewOrderResponse(Orders order) {
-        this.id = order.getId();
-        this.userId = order.getUser().getId();
-        this.totalPrice = order.getTotal_price();
-        this.orderNumber = order.getOrder_number();
-        this.orderItems = new ArrayList<>();
-    }
 }

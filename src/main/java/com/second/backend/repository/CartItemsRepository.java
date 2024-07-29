@@ -1,13 +1,20 @@
 package com.second.backend.repository;
-import org.springframework.data.jpa.repository.JpaRepository;
+
 import com.second.backend.model.CartItems;
 import com.second.backend.model.Carts;
 import com.second.backend.model.Product;
 import com.second.backend.model.ProductSizes;
-import java.util.List;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-public interface CartItemsRepository extends JpaRepository<CartItems, Integer>{
+import java.util.List;
+import java.util.Optional;
+
+@Repository
+public interface CartItemsRepository extends JpaRepository<CartItems, Integer> {
+    Optional<CartItems> findByCartAndProductAndProductSizes(Carts cart, Product product, ProductSizes productSizes);
+    List<CartItems> findByCart(Carts cart);
     List<CartItems> findByUserId(Integer userId);
-    CartItems findByCartsAndProductAndProductSizes(Carts carts, Product product, ProductSizes productSizes);
-    List<CartItems> findByCarts(Carts carts);
+
+
 }

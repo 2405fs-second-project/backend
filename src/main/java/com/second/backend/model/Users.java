@@ -27,33 +27,36 @@ public class Users {
     private String password;
 
     @Column(name = "phone_num", nullable = false, length = 20)
-    private String phone_num;
+    private String phoneNum;
 
     @Column(name = "address", nullable = true, length = 100) // nullable 설정 및 기본값 설정
+    @Builder.Default
     private String address = "";
 
     @Column(name = "gender", nullable = true) // 성별은 nullable 설정 및 기본값 설정
     @Enumerated(EnumType.STRING)
+    @Builder.Default
     private Gender gender = Gender.UNKNOWN;
 
     @Column(name = "profile_picture_url", columnDefinition = "TEXT DEFAULT ''")
-    private String profile_picture_url;
+    @Builder.Default
+    private String profilePictureUrl = "";
 
     @Column(name = "about_me", length = 100, columnDefinition = "VARCHAR(100) DEFAULT ''")
     @Builder.Default
-    private String about_me = "";
+    private String aboutMe = "";
 
     @Column(name = "update_name", length = 30)
-    private String update_name;
+    private String updateName;
 
     @Column(name = "update_address", length = 500)
-    private String update_address;
+    private String updateAddress;
 
     @Column(name = "update_phone", length = 50)
-    private String update_phone;
+    private String updatePhone;
 
     @Column(name = "shipping_info", length = 500)
-    private String shipping_info;
+    private String shippingInfo;
 
     public enum Gender {
         MALE,

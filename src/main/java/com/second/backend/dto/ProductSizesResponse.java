@@ -9,9 +9,9 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class CartRequest {
-    private Integer userId;
+public class ProductSizesResponse {
+    private Integer id;
     private Integer productId;
     private String size;
-    private Integer quantity;
+    private Integer stock;
 }

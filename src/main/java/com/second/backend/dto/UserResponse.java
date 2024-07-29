@@ -1,8 +1,14 @@
 package com.second.backend.dto;
 
 import com.second.backend.model.Users;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+@NoArgsConstructor
+@AllArgsConstructor
+@Setter
 @Getter
 public class UserResponse {
 
@@ -20,18 +26,5 @@ public class UserResponse {
     private String updateAddress;
     private String shippingInfo;
 
-    public UserResponse(Users user) {
-        this.name = user.getName();
-        this.email = user.getEmail();
-        this.password = user.getPassword();
-        this.phoneNum = user.getPhone_num();
-        this.address = user.getAddress();
-        this.profilePictureUrl = user.getProfile_picture_url();
-        this.gender = user.getGender();
-        this.aboutMe = user.getAbout_me();
-        this.updateName = user.getUpdate_name();
-        this.updatePhone = user.getUpdate_phone();
-        this.updateAddress = user.getUpdate_address();
-        this.shippingInfo = user.getShipping_info();
-    }
+
 }

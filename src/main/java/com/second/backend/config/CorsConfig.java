@@ -3,6 +3,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.beans.factory.annotation.Value;
 
 //CORS 설정 (addCorsMappings):
 //클라이언트 측의 브라우저가 다른 출처의 리소스에 접근할 수 있도록 허용합니다.
@@ -10,6 +11,10 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 public class CorsConfig implements WebMvcConfigurer{
+
+    @Value("${file.upload-dir}")
+    private String uploadDir;
+
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**") // 특정 출처(도메인)에서 오는 요청을 허용
@@ -21,9 +26,7 @@ public class CorsConfig implements WebMvcConfigurer{
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("img/**")
-                .addResourceLocations("file://user/local/images/");
+        registry.addResourceHandler("/img/**")
+                .addResourceLocations("file:" + uploadDir + "/");
     }
-
-
 }

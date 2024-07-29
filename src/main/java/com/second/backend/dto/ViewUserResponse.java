@@ -28,14 +28,14 @@ public class ViewUserResponse {
         this.id = user.getId();
         this.name = user.getName();
         this.email = user.getEmail();
-        this.phoneNum = user.getPhone_num();
+        this.phoneNum = user.getPhoneNum();
         this.address = user.getAddress();
-        this.profilePictureUrl = user.getProfile_picture_url();
+        this.profilePictureUrl = user.getProfilePictureUrl();
         this.gender = user.getGender();
-        this.aboutMe = user.getAbout_me();
-        this.updateName = user.getUpdate_name();
-        this.updatePhone = user.getUpdate_phone();
-        this.updateAddress = user.getUpdate_address();
-        this.shippingInfo = user.getShipping_info();
+        this.aboutMe = user.getAboutMe();
+        this.updateName = user.getUpdateName();
+        this.updatePhone = user.getUpdatePhone();
+        this.updateAddress = user.getUpdateAddress();
+        this.shippingInfo = user.getShippingInfo();
     }
 }

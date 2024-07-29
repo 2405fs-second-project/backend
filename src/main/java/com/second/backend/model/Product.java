@@ -1,20 +1,17 @@
 package com.second.backend.model;
-import jakarta.persistence.Table;
-import jakarta.persistence.*;
-import java.time.LocalDate;
 
 import lombok.*;
 
+import jakarta.persistence.*;
+import java.time.LocalDate;
+
+@Setter
+@Getter
 @Entity
 @Table(name = "product")
-
-@Getter
-@Setter
-@Builder
-
 @NoArgsConstructor
-@AllArgsConstructor
-
+@AllArgsConstructor // 추가
+@Builder
 public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -57,16 +54,9 @@ public class Product {
     @Column(name = "ListedDate")
     private LocalDate listedDate;
 
-    @Column(name = "category", length = 50, nullable = false)
-    private String category;
 
     @PrePersist
     public void prePersist() {
         this.listedDate = LocalDate.now();
     }
-
-
-
-
-
 }

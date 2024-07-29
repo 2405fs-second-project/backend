@@ -14,29 +14,31 @@ public class AddUserRequest {
     private String password;
     private String email;
     private String phoneNum;
-    private String address = ""; // 기본값 설정
+    private String address;
     private String profilePictureUrl;
-    private Users.Gender gender = Users.Gender.UNKNOWN; // 기본값 설정
+    private Users.Gender gender;
     private String aboutMe;
     private String updateName;
     private String updateAddress;
     private String updatePhone;
     private String shippingInfo;
 
+
     public Users toEntity() {
         return Users.builder()
                 .name(name)
                 .email(email)
                 .password(password)
-                .phone_num(phoneNum)
+                .phoneNum(phoneNum)
                 .address(address)
                 .gender(gender)
-                .profile_picture_url(profilePictureUrl)
-                .about_me(aboutMe)
-                .update_name(updateName)
-                .update_address(updateAddress)
-                .update_phone(updatePhone)
-                .shipping_info(shippingInfo)
+                .profilePictureUrl(profilePictureUrl)
+                .aboutMe(aboutMe)
+                .updateName(updateName)
+                .updateAddress(updateAddress)
+                .updatePhone(updatePhone)
+                .shippingInfo(shippingInfo)
                 .build();
     }
+
 }

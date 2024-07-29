@@ -24,16 +24,15 @@ public class Orders {
     private Users user;
 
     @Column(name = "total_price", nullable = false)
-    private Integer total_price;
+    private Integer totalPrice;
 
     @Column(name = "order_date", nullable = false)
-    private LocalDateTime order_date;
+    private LocalDateTime orderDate;
 
     @Column(name = "order_number", nullable = false, length = 100)
-    private String order_number;
+    private String orderNumber;
 
     @OneToMany(mappedBy = "order")
     private Set<OrderItems> orderItems;
-
 
 }

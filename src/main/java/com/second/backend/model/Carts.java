@@ -1,6 +1,15 @@
 package com.second.backend.model;
-import jakarta.persistence.*;
 
+import jakarta.persistence.*;
+import lombok.*;
+
+import java.util.List;
+
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @Entity
 @Table(name = "carts")
 public class Carts {
@@ -8,24 +17,10 @@ public class Carts {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private Users users;
+    @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<CartItems> cartItems;
 
-    public Integer getId() {
-        return id;
-    }
+    @Column(name = "user_id", nullable = false)
+    private int userId;
 
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-
-    public Users getUser() {
-        return users;
-    }
-
-    public void setUser(Users users) {
-        this.users = users;
-    }
 }
