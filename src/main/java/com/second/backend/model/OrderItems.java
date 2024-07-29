@@ -4,7 +4,7 @@ package com.second.backend.model;
 import jakarta.persistence.*;
 import lombok.*;
 
-
+@Getter
 @Setter
 @NoArgsConstructor(access =  AccessLevel.PROTECTED)
 @AllArgsConstructor
@@ -30,25 +30,6 @@ public class OrderItems {
     private Integer quantity;
 
     @Column(name = "pay_state", length = 50, nullable = false)
-    private String pay_state;
+    private String payState = "결제완료";
 
-    public Integer getId() {
-        return id;
-    }
-
-    public Orders getOrder() {
-        return order;
-    }
-
-    public Product getProduct() {
-        return product;
-    }
-
-    public Integer getQuantity() {
-        return quantity;
-    }
-
-    public String getPay_state() {
-        return pay_state;
-    }
 }

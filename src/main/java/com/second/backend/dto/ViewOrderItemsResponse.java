@@ -4,9 +4,9 @@ import com.second.backend.model.OrderItems;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
+
 
 @Setter
 @Getter
@@ -22,15 +22,4 @@ public class ViewOrderItemsResponse {
     private final Integer quantity;        // 수량
     private final String payState;  //주문 상태
 
-    public ViewOrderItemsResponse(OrderItems orderItems) {
-        this.orderId = orderItems.getOrder().getId(); // 주문 ID
-        this.orderNumber = orderItems.getOrder().getOrder_number(); // 주문 번호
-        this.orderDate = orderItems.getOrder().getOrder_date();
-        this.productId = orderItems.getProduct().getId(); // 상품 ID
-        this.productName = orderItems.getProduct().getName(); // 상품 이름
-        this.productPrice = orderItems.getProduct().getPrice();
-        this.productFileUrl = orderItems.getProduct().getFileUrl();
-        this.quantity = orderItems.getQuantity(); // 수량
-        this.payState = orderItems.getPay_state(); // 단가
-    }
 }

@@ -26,14 +26,14 @@ public class OrderItemsService {
         return orderItems.stream()
                 .map(orderItem -> new ViewOrderItemsResponse(
                         orderItem.getOrder().getId(),
-                        orderItem.getOrder().getOrder_number(),
-                        orderItem.getOrder().getOrder_date(),
+                        orderItem.getOrder().getOrderNumber(),
+                        orderItem.getOrder().getOrderDate(),
                         orderItem.getProduct().getId(),
                         orderItem.getProduct().getName(),
                         orderItem.getProduct().getPrice(),
                         orderItem.getProduct().getFileUrl().replace("/img/",""), // 이미지 URL 추가
                         orderItem.getQuantity(),
-                        orderItem.getPay_state()
+                        orderItem.getPayState()
                 ))
                 .collect(Collectors.toList());
     }
@@ -44,14 +44,14 @@ public class OrderItemsService {
         return orderItems.stream()
                 .map(orderItem -> new ViewOrderItemsResponse(
                         orderItem.getOrder().getId(),
-                        orderItem.getOrder().getOrder_number(),
-                        orderItem.getOrder().getOrder_date(),
+                        orderItem.getOrder().getOrderNumber(),
+                        orderItem.getOrder().getOrderDate(),
                         orderItem.getProduct().getId(),
                         orderItem.getProduct().getName(),
                         orderItem.getProduct().getPrice(),
                         orderItem.getProduct().getFileUrl(), // 상품 파일 정보 가져오기
                         orderItem.getQuantity(),
-                        orderItem.getPay_state()
+                        orderItem.getPayState()
                 ))
                 .collect(Collectors.toList());
     }

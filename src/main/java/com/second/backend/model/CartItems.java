@@ -1,7 +1,13 @@
 package com.second.backend.model;
-import jakarta.persistence.*;
-import jakarta.persistence.Entity;
 
+import jakarta.persistence.*;
+import lombok.*;
+
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @Entity
 @Table(name = "cart_items")
 public class CartItems {
@@ -10,14 +16,14 @@ public class CartItems {
     private Integer id;
 
     @ManyToOne
-    @JoinColumn(name = "cart_id")
-    private Carts carts;
+    @JoinColumn(name = "cart_id", referencedColumnName = "id")
+    private Carts cart;
 
     @ManyToOne
-    @JoinColumn(name = "Product_id", nullable = false)
+    @JoinColumn(name = "product_id", referencedColumnName = "id")
     private Product product;
 
-    @Column(name = "quantity")
+    @Column(name = "quantity", nullable = false)
     private Integer quantity;
 
     @ManyToOne
@@ -26,56 +32,4 @@ public class CartItems {
 
     @Column(name = "user_id", nullable = false)
     private int userId;
-
-    public CartItems() {
-
-    }
-
-    public ProductSizes getProductSizes() {
-        return productSizes;
-    }
-
-    public void setProductSizes(ProductSizes productSizes) {
-        this.productSizes = productSizes;
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public Carts getCarts() {
-        return carts;
-    }
-
-    public void setCarts(Carts carts) {
-        this.carts = carts;
-    }
-
-    public Product getProduct() {
-        return product;
-    }
-
-    public void setProduct(Product product) {
-        this.product = product;
-    }
-
-    public Integer getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(Integer quantity) {
-        this.quantity = quantity;
-    }
-
-    public int getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Integer userId) {
-        this.userId = userId;
-    }
 }

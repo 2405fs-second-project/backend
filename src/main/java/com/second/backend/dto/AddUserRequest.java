@@ -29,15 +29,15 @@ public class AddUserRequest {
                 .name(name)
                 .email(email)
                 .password(password)
-                .phone_num(phoneNum)
+                .phoneNum(phoneNum)
                 .address(address)
                 .gender(gender)
-                .profile_picture_url(profilePictureUrl)
-                .about_me(aboutMe)
-                .update_name(updateName)
-                .update_address(updateAddress)
-                .update_phone(updatePhone)
-                .shipping_info(shippingInfo)
+                .profilePictureUrl(profilePictureUrl)
+                .aboutMe(aboutMe)
+                .updateName(updateName)
+                .updateAddress(updateAddress)
+                .updatePhone(updatePhone)
+                .shippingInfo(shippingInfo)
                 .build();
     }
 
