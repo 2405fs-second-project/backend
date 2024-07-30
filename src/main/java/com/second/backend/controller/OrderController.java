@@ -26,13 +26,25 @@ public class OrderController {
         return ResponseEntity.ok(userOrderInfo);
     }
 
-    @GetMapping("/cart-items/{userId}")
+    @GetMapping("/cart-items/{userId}") //장바구니에서 구매할 경우
     public ResponseEntity<List<CartItemsResponse>> getCartItems(@PathVariable Integer userId) {
         List<CartItemsResponse> cartItems = orderService.getCartItems(userId);
         if (cartItems.isEmpty()) {
             return ResponseEntity.noContent().build(); // 데이터가 없을 때 204 No Content 응답
         }
         return ResponseEntity.ok(cartItems); // 정상적으로 데이터를 반환
+    }
+
+    @GetMapping("/buy-item/{productId}")
+    public ResponseEntity<BuyOrderRequest> getProduct(@PathVariable Integer productId) {
+        BuyOrderRequest product = orderService.getProductById(productId); // 서비스에서 상품 정보 가져오기
+
+        if (product == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(null); // 데이터가 없을 때 404 Not Found 응답
+        }
+
+        return ResponseEntity.ok(product); // 정상적으로 데이터를 반환
     }
 
     @PostMapping("/create/{userId}")
