@@ -3,6 +3,8 @@ package com.second.backend.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.Set;
+
 @Entity
 @Table(name = "users")
 @Getter
@@ -29,18 +31,17 @@ public class Users {
     @Column(name = "phone_num", nullable = false, length = 20)
     private String phone_num;
 
-    @Column(name = "address", nullable = false, length = 100)
-    private String address;
+    @Column(name = "address", nullable = true, length = 100)
+    private String address = "";
 
-    @Column(name = "gender", nullable = false)
     @Enumerated(EnumType.STRING)
-    private Gender gender;
+    @Column(name = "gender", nullable = true)
+    private Gender gender = Gender.UNKNOWN;
 
-    @Column(name = "profile_picture_url", columnDefinition = "TEXT DEFAULT ''")
+    @Column(name = "profile_picture_url", columnDefinition = "TEXT")
     private String profile_picture_url;
 
     @Column(name = "about_me", length = 100, columnDefinition = "VARCHAR(100) DEFAULT ''")
-    @Builder.Default
     private String about_me = "";
 
     @Column(name = "update_name", length = 30)
@@ -55,8 +56,14 @@ public class Users {
     @Column(name = "shipping_info", length = 500)
     private String shipping_info;
 
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "Users_roles", joinColumns = @JoinColumn(name = "Users_id"))
+    @Column(name = "roles")
+    private Set<String> roles;
+
     public enum Gender {
         MALE,
-        FEMALE
+        FEMALE,
+        UNKNOWN
     }
 }

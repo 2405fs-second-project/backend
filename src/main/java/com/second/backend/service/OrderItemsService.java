@@ -6,14 +6,9 @@ import com.second.backend.dto.ViewOrderItemsResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -25,8 +20,9 @@ public class OrderItemsService {
     @Value("${file.upload-dir}")
     private String uploadDir;
 
+    @Transactional(readOnly = true)  // 데이터 일관성을 유지하는데 도움이 되는 것
     public List<ViewOrderItemsResponse> getOrderItemsByUserId(Integer userId) {
-        List<OrderItems> orderItems = orderItemsRepository.findByUserId(userId);
+        List<OrderItems> orderItems = orderItemsRepository.findByOrderUserId(userId);
         return orderItems.stream()
                 .map(orderItem -> new ViewOrderItemsResponse(
                         orderItem.getOrder().getId(),
@@ -42,6 +38,7 @@ public class OrderItemsService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public List<ViewOrderItemsResponse> getAllOrderItems() {
         List<OrderItems> orderItems = orderItemsRepository.findAll();
         return orderItems.stream()
@@ -59,4 +56,3 @@ public class OrderItemsService {
                 .collect(Collectors.toList());
     }
 }
-

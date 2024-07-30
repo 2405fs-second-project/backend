@@ -43,12 +43,13 @@ public class UserViewController {
     public ResponseEntity<Users> updateUser(@PathVariable Integer id, @RequestBody UpdateUserRequest request) {
         Users user;
         try {
-            user = userService.findById(id);
-            user.setUpdate_name(request.getUpdate_name());
-            user.setUpdate_address(request.getUpdate_address());
-            user.setUpdate_phone(request.getUpdate_phone());
-            user.setShipping_info(request.getShipping_info());
-            user = userService.save(user);
+            user = userService.updateUser(
+                    id,
+                    request.getUpdateName(),
+                    request.getUpdateAddress(),
+                    request.getUpdatePhone(),
+                    request.getShippingInfo()
+            );
             return ResponseEntity.ok(user);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
@@ -56,7 +57,8 @@ public class UserViewController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
+    }
 
 
-}
+
 
