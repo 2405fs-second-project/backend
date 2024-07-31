@@ -1,6 +1,5 @@
 package com.second.backend.dto;
 
-import com.second.backend.model.Product;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -24,5 +23,4 @@ public class ViewProductResponse {
     private String fileUrl;
     private String description;
     private LocalDate listedDate;
-
 }

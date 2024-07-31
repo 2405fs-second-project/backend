@@ -77,6 +77,7 @@ public class CartService { //장바구니 기능 제공
         return "장바구니에 추가되었습니다.";
     }
 
+    @Transactional
     public List<CartResponse> getCartItemsByUserId(Integer userId) {
         Optional<Carts> optionalCart = cartRepository.findByUserId(userId); //장바구니 조회
         if (optionalCart.isEmpty()) {

@@ -8,7 +8,7 @@ import java.util.Set;
 
 @Getter
 @Setter
-@NoArgsConstructor(access =  AccessLevel.PROTECTED)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
 @Table(name="orders")
@@ -34,5 +34,4 @@ public class Orders {
 
     @OneToMany(mappedBy = "order")
     private Set<OrderItems> orderItems;
-
 }
