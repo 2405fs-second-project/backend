@@ -1,43 +1,63 @@
+// AuthService.java
 package com.second.backend.service;
 
-import com.second.backend.model.Users;
 import com.second.backend.model.LoginRequest;
+import com.second.backend.model.RegisterRequest;
+import com.second.backend.model.Users;
 import com.second.backend.model.AuthenticationResponse;
 import com.second.backend.repository.UsersRepository;
-import com.second.backend.security.JwtTokenProvider;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import com.second.backend.utils.JwtUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 public class AuthService {
 
-    private static final Logger logger = LoggerFactory.getLogger(AuthService.class);
+    @Autowired
+    private UsersRepository usersRepository;
 
-    private final UsersRepository usersRepository;
-    private final PasswordEncoder passwordEncoder;
-    private final JwtTokenProvider jwtTokenProvider;
+    @Autowired
+    private JwtUtil jwtUtil;
 
-    public AuthService(UsersRepository usersRepository, PasswordEncoder passwordEncoder, JwtTokenProvider jwtTokenProvider) {
-        this.usersRepository = usersRepository;
-        this.passwordEncoder = passwordEncoder;
-        this.jwtTokenProvider = jwtTokenProvider;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    public AuthenticationResponse register(RegisterRequest registerRequest) {
+        // 비밀번호 확인
+        if (!registerRequest.getPassword().equals(registerRequest.getConfirmPassword())) {
+            throw new RuntimeException("Passwords do not match");
+        }
+
+        // 이메일 중복 체크
+        if (usersRepository.findByEmail(registerRequest.getEmail()).isPresent()) {
+            throw new RuntimeException("Email is already taken");
+        }
+
+        // 사용자 정보 저장
+        Users newUser = new Users();
+        newUser.setName(registerRequest.getName());
+        newUser.setPhoneNum(registerRequest.getPhoneNum()); // 전화번호 필드 수정
+        newUser.setEmail(registerRequest.getEmail());
+        newUser.setPassword(passwordEncoder.encode(registerRequest.getPassword())); // 비밀번호 암호화
+
+        usersRepository.save(newUser);
+
+        // 가입 성공 응답
+        String jwt = jwtUtil.createToken(newUser.getEmail(), newUser.getAuthorities().toString());
+        return new AuthenticationResponse(jwt, newUser.getId(), newUser.getName());
     }
 
     public AuthenticationResponse authenticate(LoginRequest loginRequest) {
-        try {
-            Users user = usersRepository.findByEmail(loginRequest.getEmail())
-                    .orElseThrow(() -> new UsernameNotFoundException("Invalid email or password."));
-            if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
-                throw new UsernameNotFoundException("Invalid email or password.");
-            }
-            String jwt = jwtTokenProvider.createToken(user.getEmail(), null); // 역할 정보 없이 토큰 생성
-            return new AuthenticationResponse(jwt, user.getId());
-        } catch (Exception e) {
-            logger.error("인증 중 오류", e);
-            throw new RuntimeException("Authentication failed", e);
+        Users user = usersRepository.findByEmail(loginRequest.getEmail())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
+            throw new RuntimeException("Invalid credentials");
         }
+
+        String jwt = jwtUtil.createToken(user.getEmail(), user.getAuthorities().toString());
+
+        return new AuthenticationResponse(jwt, user.getId(), user.getName());
     }
 }

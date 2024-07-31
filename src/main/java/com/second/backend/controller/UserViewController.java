@@ -8,8 +8,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.util.Map;
+import java.io.IOException;
 
 @RequiredArgsConstructor
 @RestController
@@ -25,17 +26,14 @@ public class UserViewController {
     }
 
     @PostMapping("/{id}/upload")
-    public ResponseEntity<Users> uploadProfilePicture(@PathVariable Integer id, @RequestBody Map<String, String> request) {
-        String base64Image = request.get("image");
-
-        Users user;
+    public ResponseEntity<Users> uploadProfilePicture(@PathVariable Integer id, @RequestParam("file") MultipartFile file) {
         try {
-            user = userService.uploadProfilePicture(id, base64Image);
+            Users user = userService.uploadProfilePicture(id, file);
             return ResponseEntity.ok(user);
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
 
@@ -57,8 +55,4 @@ public class UserViewController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
-    }
-
-
-
-
+}

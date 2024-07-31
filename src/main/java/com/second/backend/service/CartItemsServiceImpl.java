@@ -15,4 +15,4 @@ public class CartItemsServiceImpl implements CartItemsService {
     public void deleteItemsByIds(List<Integer> ids) {
         cartItemsRepository.deleteAllById(ids);
     }
-    }
+}

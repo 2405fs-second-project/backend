@@ -2,68 +2,77 @@ package com.second.backend.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.Set;
+import java.util.Collection;
+import java.util.Collections;
 
-@Entity
-@Table(name = "users")
 @Getter
 @Setter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Users {
+@Entity
+@Table(name = "users")
+public class Users implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", updatable = false)
     private Integer id;
 
-    @Column(name = "email", nullable = false, length = 40, unique = true)
+    @Column(nullable = false, unique = true)
     private String email;
 
-    @Column(name = "name", nullable = false, length = 30)
-    private String name;
-
-    @Column(name = "password", nullable = false, length = 100)
+    @Column(nullable = false)
     private String password;
 
-    @Column(name = "phone_num", nullable = false, length = 20)
-    private String phone_num;
+    @Column(nullable = false)
+    private String name;
 
-    @Column(name = "address", nullable = true, length = 100)
-    private String address = "";
+    @Column(name = "phone_num", nullable = false)
+    private String phoneNum; // 수정된 부분
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "gender", nullable = true)
-    private Gender gender = Gender.UNKNOWN;
+    @Column(nullable = true) // address is nullable
+    private String address;
 
-    @Column(name = "profile_picture_url", columnDefinition = "TEXT")
-    private String profile_picture_url;
+    private String profilePictureUrl;
 
-    @Column(name = "about_me", length = 100, columnDefinition = "VARCHAR(100) DEFAULT ''")
-    private String about_me = "";
+    private String aboutMe;
 
-    @Column(name = "update_name", length = 30)
-    private String update_name;
+    private String updateName;
+    private String updateAddress;
+    private String updatePhone;
+    private String shippingInfo;
 
-    @Column(name = "update_address", length = 500)
-    private String update_address;
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"));
+    }
 
-    @Column(name = "update_phone", length = 50)
-    private String update_phone;
+    @Override
+    public String getUsername() {
+        return email;
+    }
 
-    @Column(name = "shipping_info", length = 500)
-    private String shipping_info;
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
 
-    @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "Users_roles", joinColumns = @JoinColumn(name = "Users_id"))
-    @Column(name = "roles")
-    private Set<String> roles;
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
 
-    public enum Gender {
-        MALE,
-        FEMALE,
-        UNKNOWN
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
     }
 }

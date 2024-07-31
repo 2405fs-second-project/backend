@@ -1,18 +1,16 @@
 package com.second.backend.model;
 
-
 import jakarta.persistence.*;
 import lombok.*;
 
-
+@Getter
 @Setter
-@NoArgsConstructor(access =  AccessLevel.PROTECTED)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
-@Table(name="order_items")
+@Table(name = "order_items")
 @Entity
 public class OrderItems {
-
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,25 +28,8 @@ public class OrderItems {
     private Integer quantity;
 
     @Column(name = "pay_state", length = 50, nullable = false)
-    private String pay_state;
+    @Builder.Default
+    private String payState = "결제완료";
 
-    public Integer getId() {
-        return id;
-    }
-
-    public Orders getOrder() {
-        return order;
-    }
-
-    public Product getProduct() {
-        return product;
-    }
-
-    public Integer getQuantity() {
-        return quantity;
-    }
-
-    public String getPay_state() {
-        return pay_state;
-    }
+    // 기존 getter와 setter를 lombok으로 대체
 }
