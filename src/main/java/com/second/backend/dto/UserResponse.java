@@ -1,36 +1,40 @@
 package com.second.backend.dto;
 
 import com.second.backend.model.Users;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+@NoArgsConstructor
+@AllArgsConstructor
+@Setter
 @Getter
 public class UserResponse {
 
+    private Integer id;
     private String name;
-    private String password;
     private String email;
-    private String phone_num;
+    private String phoneNum; // 수정된 부분
     private String address;
-    private String profile_picture_url;
-    private Users.Gender gender;
-    private String about_me;
-    private String update_name;
-    private String update_phone;
-    private String update_address;
-    private String shipping_info;
+    private String profilePictureUrl;
+    private String aboutMe;
+    private String updateName;
+    private String updatePhone;
+    private String updateAddress;
+    private String shippingInfo;
 
     public UserResponse(Users user) {
+        this.id = user.getId();
         this.name = user.getName();
         this.email = user.getEmail();
-        this.password = user.getPassword();
-        this.phone_num = user.getPhone_num();
+        this.phoneNum = user.getPhoneNum(); // 수정된 부분
         this.address = user.getAddress();
-        this.profile_picture_url = user.getProfile_picture_url();
-        this.gender = user.getGender();
-        this.about_me = user.getAbout_me();
-        this.update_name = user.getUpdate_name();
-        this.update_phone = user.getUpdate_phone();
-        this.update_address = user.getUpdate_address();
-        this.shipping_info = user.getShipping_info();
+        this.profilePictureUrl = user.getProfilePictureUrl();
+        this.aboutMe = user.getAboutMe();
+        this.updateName = user.getUpdateName();
+        this.updatePhone = user.getUpdatePhone();
+        this.updateAddress = user.getUpdateAddress();
+        this.shippingInfo = user.getShippingInfo();
     }
 }

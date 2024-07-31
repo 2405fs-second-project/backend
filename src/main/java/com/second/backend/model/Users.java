@@ -2,61 +2,77 @@ package com.second.backend.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
-@Entity
-@Table(name = "users")
+import java.util.Collection;
+import java.util.Collections;
+
 @Getter
 @Setter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Users {
+@Entity
+@Table(name = "users")
+public class Users implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", updatable = false)
     private Integer id;
 
-    @Column(name = "email", nullable = false, length = 40, unique = true)
+    @Column(nullable = false, unique = true)
     private String email;
 
-    @Column(name = "name", nullable = false, length = 30)
-    private String name;
-
-    @Column(name = "password", nullable = false, length = 100)
+    @Column(nullable = false)
     private String password;
 
-    @Column(name = "phone_num", nullable = false, length = 20)
-    private String phone_num;
+    @Column(nullable = false)
+    private String name;
 
-    @Column(name = "address", nullable = false, length = 100)
+    @Column(name = "phone_num", nullable = false)
+    private String phoneNum; // 수정된 부분
+
+    @Column(nullable = true) // address is nullable
     private String address;
 
-    @Column(name = "gender", nullable = false)
-    @Enumerated(EnumType.STRING)
-    private Gender gender;
+    private String profilePictureUrl;
 
-    @Column(name = "profile_picture_url", columnDefinition = "TEXT DEFAULT ''")
-    private String profile_picture_url;
+    private String aboutMe;
 
-    @Column(name = "about_me", length = 100, columnDefinition = "VARCHAR(100) DEFAULT ''")
-    @Builder.Default
-    private String about_me = "";
+    private String updateName;
+    private String updateAddress;
+    private String updatePhone;
+    private String shippingInfo;
 
-    @Column(name = "update_name", length = 30)
-    private String update_name;
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"));
+    }
 
-    @Column(name = "update_address", length = 500)
-    private String update_address;
+    @Override
+    public String getUsername() {
+        return email;
+    }
 
-    @Column(name = "update_phone", length = 50)
-    private String update_phone;
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
 
-    @Column(name = "shipping_info", length = 500)
-    private String shipping_info;
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
 
-    public enum Gender {
-        MALE,
-        FEMALE
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
     }
 }

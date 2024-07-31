@@ -4,41 +4,27 @@ import com.second.backend.model.Users;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @NoArgsConstructor
 @AllArgsConstructor
+@Setter
 @Getter
 public class AddUserRequest {
 
     private String name;
-    private String password;
+    private String phoneNum;
     private String email;
-    private String phone_num;
-    private String address;
-    private String profile_picture_url;
-    private Users.Gender gender;
-    private String about_me;
-    private String update_name;
-    private String update_address;
-    private String update_phone;
-    private String shipping_info;
-
+    private String password;
 
     public Users toEntity() {
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         return Users.builder()
                 .name(name)
+                .phoneNum(phoneNum)
                 .email(email)
-                .password(password)
-                .phone_num(phone_num)
-                .address(address)
-                .gender(gender)
-                .profile_picture_url(profile_picture_url)
-                .about_me(about_me)
-                .update_name(update_name)
-                .update_address(update_address)
-                .update_phone(update_phone)
-                .shipping_info(shipping_info)
+                .password(encoder.encode(password))
                 .build();
     }
-
 }

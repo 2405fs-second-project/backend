@@ -1,15 +1,15 @@
 package com.second.backend.dto;
 
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
+@AllArgsConstructor
+@NoArgsConstructor
 @Getter
 @Setter
 @Data
 public class UpdateUserRequest {
-    private String update_name;
-    private String update_phone;
-    private String update_address;
-    private String shipping_info;
+    private String updateName;
+    private String updatePhone;
+    private String updateAddress;
+    private String shippingInfo;
 }
