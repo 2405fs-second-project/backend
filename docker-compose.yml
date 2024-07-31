@@ -8,8 +8,8 @@ services:
       - "8081:8081" # 백엔드 포트 매핑
     environment:
       - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/shppingmal_db
-      - SPRING_DATASOURCE_USERNAME=jje
-      - SPRING_DATASOURCE_PASSWORD=wjdwndms12!
+      - SPRING_DATASOURCE_USERNAME=shs
+      - SPRING_DATASOURCE_PASSWORD=q1w2e3r4!
     networks:
       - app-network
 
@@ -26,10 +26,10 @@ services:
     image: mysql:8.0
     container_name: mysql
     environment:
-      MYSQL_ROOT_PASSWORD: wjdwndms12!
+      MYSQL_ROOT_PASSWORD: q1w2e3r4!
       MYSQL_DATABASE: shppingmal_db
-      MYSQL_USER: jje
-      MYSQL_PASSWORD: wjdwndms12!
+      MYSQL_USER: shs
+      MYSQL_PASSWORD: q1w2e3r4!
     ports:
       - "3307:3306" #3306 포트가 이미 다른 프로세스에서 사용 중이어서 충돌방지를 위해 3307로 설정
     networks:

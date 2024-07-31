@@ -18,7 +18,6 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        // 파일을 저장한 실제 경로로 변경
         registry.addResourceHandler("/img/**")
                 .addResourceLocations("file:/System/Volumes/Data/path/to/uploadDir/");
     }

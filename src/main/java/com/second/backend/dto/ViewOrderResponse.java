@@ -1,6 +1,5 @@
 package com.second.backend.dto;
 
-import com.second.backend.model.Orders;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -17,5 +16,4 @@ public class ViewOrderResponse {
     private Integer totalPrice;
     private String orderNumber;
     private LocalDateTime orderDate;
-
 }

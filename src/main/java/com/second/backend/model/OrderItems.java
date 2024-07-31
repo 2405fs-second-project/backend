@@ -30,4 +30,6 @@ public class OrderItems {
     @Column(name = "pay_state", length = 50, nullable = false)
     @Builder.Default
     private String payState = "결제완료";
+
+    // 기존 getter와 setter를 lombok으로 대체
 }

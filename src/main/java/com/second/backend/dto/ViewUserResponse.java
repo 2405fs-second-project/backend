@@ -1,23 +1,23 @@
 package com.second.backend.dto;
 
 import com.second.backend.model.Users;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@Data
-@EqualsAndHashCode
 @NoArgsConstructor
 @AllArgsConstructor
+@Setter
 @Getter
 public class ViewUserResponse {
 
     private Integer id;
     private String name;
-    private String password;
     private String email;
-    private String phoneNum;
+    private String phoneNum; // 수정된 부분
     private String address;
     private String profilePictureUrl;
-    private Users.Gender gender;
     private String aboutMe;
     private String updateName;
     private String updatePhone;
@@ -28,10 +28,9 @@ public class ViewUserResponse {
         this.id = user.getId();
         this.name = user.getName();
         this.email = user.getEmail();
-        this.phoneNum = user.getPhoneNum();
+        this.phoneNum = user.getPhoneNum(); // 수정된 부분
         this.address = user.getAddress();
         this.profilePictureUrl = user.getProfilePictureUrl();
-        this.gender = user.getGender();
         this.aboutMe = user.getAboutMe();
         this.updateName = user.getUpdateName();
         this.updatePhone = user.getUpdatePhone();
