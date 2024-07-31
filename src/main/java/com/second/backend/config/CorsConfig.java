@@ -13,8 +13,7 @@ import org.springframework.beans.factory.annotation.Value;
 @Configuration
 public class CorsConfig implements WebMvcConfigurer {
 
-    @Value("${file.upload-dir}")
-    private String uploadDir;
+
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
@@ -23,11 +22,14 @@ public class CorsConfig implements WebMvcConfigurer {
                 .allowedMethods("GET", "POST", "PUT", "DELETE") // 허용할 HTTP 메서드
                 .allowedHeaders("*"); // 허용할 HTTP 헤더
     }
-
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        // "/img/profile/**"로 요청을 받으면 uploadDir 경로에서 파일을 제공
+        // profile 이미지 제공
         registry.addResourceHandler("/img/profile/**")
-                .addResourceLocations("file:" + uploadDir + "/");
+                .addResourceLocations("classpath:/static/img/profile/");
+
+        // products 이미지 제공
+        registry.addResourceHandler("/img/products/**")
+                .addResourceLocations("classpath:/static/img/products/");
     }
 }

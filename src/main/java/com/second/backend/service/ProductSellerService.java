@@ -14,6 +14,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -28,6 +29,7 @@ public class ProductSellerService {
     private final ProductRepository productRepository;
     private final ProductSizesRepository productSizesRepository;
     private final UsersRepository usersRepository;
+    private final CommonService commonService;
 
     //1.판매자는 자신이 현재 판매중인 전체 물품 조회
     public List<ProductSellerDTO> findProductsBySellerId(Integer sellerId) {
@@ -76,7 +78,7 @@ public class ProductSellerService {
     }
 
     //2. 판매자는 자신이 판매할 물품 등록
-    public Product saveProductWithSizes(Integer sellerId, ProductSellerDTO productSellerDTO) {
+    public Product saveProductWithSizes(Integer sellerId, MultipartFile file, ProductSellerDTO productSellerDTO) {
 
         Users seller;
         try {
@@ -84,6 +86,16 @@ public class ProductSellerService {
         } catch (NoSuchElementException e) {
             // 사용자 객체가 존재하지 않으면 null을 반환합니다.
             return null;
+        }
+
+        // 파일 URL을 생성합니다.
+        String productURL = null;
+        if (file != null && !file.isEmpty()) {
+            // 파일 저장 후 URL을 반환받습니다.
+            productURL = commonService.saveProductImage(file); // IOException은 여기에 의해서 발생할 수 있음
+            System.out.println("파일이 성공적으로 저장되었습니다: " + productURL); // 성공적인 파일 저장 메시지
+        } else {
+            System.out.println("업로드된 파일이 없습니다."); // 파일이 없다는 메시지
         }
 
         // Product 엔티티를 생성합니다.
@@ -96,7 +108,7 @@ public class ProductSellerService {
                 .fullName(productSellerDTO.getFullname())
                 .code(productSellerDTO.getCode())
                 .price(productSellerDTO.getPrice())
-                .fileUrl(productSellerDTO.getFileurl())
+                .fileUrl(productURL)
                 .description(productSellerDTO.getDescription())
                 .DelistedDate(productSellerDTO.getDelisteddate())
                 .listedDate(LocalDate.now()) // 현재 날짜를 listedDate에 설정합니다.
