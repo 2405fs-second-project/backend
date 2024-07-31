@@ -2,65 +2,77 @@ package com.second.backend.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
-@Entity
-@Table(name = "users")
+import java.util.Collection;
+import java.util.Collections;
+
 @Getter
 @Setter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Users {
+@Entity
+@Table(name = "users")
+public class Users implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", updatable = false)
     private Integer id;
 
-    @Column(name = "email", nullable = false, length = 40, unique = true)
+    @Column(nullable = false, unique = true)
     private String email;
 
-    @Column(name = "name", nullable = false, length = 30)
-    private String name;
-
-    @Column(name = "password", nullable = false, length = 100)
+    @Column(nullable = false)
     private String password;
 
-    @Column(name = "phone_num", nullable = false, length = 20)
-    private String phoneNum;
+    @Column(nullable = false)
+    private String name;
 
-    @Column(name = "address", nullable = true, length = 100) // nullable 설정 및 기본값 설정
-    @Builder.Default
-    private String address = "";
+    @Column(name = "phone_num", nullable = false)
+    private String phoneNum; // 수정된 부분
 
-    @Column(name = "gender", nullable = true) // 성별은 nullable 설정 및 기본값 설정
-    @Enumerated(EnumType.STRING)
-    @Builder.Default
-    private Gender gender = Gender.UNKNOWN;
+    @Column(nullable = true) // address is nullable
+    private String address;
 
-    @Column(name = "profile_picture_url", columnDefinition = "TEXT DEFAULT ''")
-    @Builder.Default
-    private String profilePictureUrl = "";
+    private String profilePictureUrl;
 
-    @Column(name = "about_me", length = 100, columnDefinition = "VARCHAR(100) DEFAULT ''")
-    @Builder.Default
-    private String aboutMe = "";
+    private String aboutMe;
 
-    @Column(name = "update_name", length = 30)
     private String updateName;
-
-    @Column(name = "update_address", length = 500)
     private String updateAddress;
-
-    @Column(name = "update_phone", length = 50)
     private String updatePhone;
-
-    @Column(name = "shipping_info", length = 500)
     private String shippingInfo;
 
-    public enum Gender {
-        MALE,
-        FEMALE,
-        UNKNOWN // 기본값으로 추가
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"));
+    }
+
+    @Override
+    public String getUsername() {
+        return email;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
     }
 }

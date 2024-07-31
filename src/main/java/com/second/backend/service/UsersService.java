@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.List;
@@ -19,10 +18,9 @@ import java.util.UUID;
 public class UsersService {
 
     private final UsersRepository userRepository;
-    private final String uploadDir = "/System/Volumes/Data/path/to/uploadDir";// 파일 저장 경로
+    private final String uploadDir = "src/main/resources/img/profile"; // 변경된 파일 저장 경로
 
-
-    public Users save(Users user) { //쓰기 작업이 포홤되어 있어서 @Transactional 기능 포함
+    public Users save(Users user) {
         return userRepository.save(user);
     }
 
@@ -36,7 +34,6 @@ public class UsersService {
         return userRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("not found with id : " + id));
     }
-
 
     @Transactional
     public Users uploadProfilePicture(Integer id, MultipartFile file) throws IOException {
@@ -96,7 +93,6 @@ public class UsersService {
         }
 
         // 저장된 파일의 URL 반환
-        return "/img/" + uniqueFilename;
+        return "/img/profile/" + uniqueFilename; // 변경된 URL 경로
     }
-
 }
