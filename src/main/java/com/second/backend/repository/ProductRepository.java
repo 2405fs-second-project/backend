@@ -1,6 +1,7 @@
 package com.second.backend.repository;
 
 import com.second.backend.model.Product;
+import com.second.backend.model.Users;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -18,8 +19,7 @@ public interface ProductRepository extends JpaRepository<Product, Integer>{
     Page<Product> findByUsersId(Integer sellerId, Pageable pageable);
 
     List<Product> findProductById(Integer Id);
-
-    Optional<Product> findById(Integer userId);//추후 삭제 필요_cartService와 연결되어있음
+    Optional<Product> findById(Integer userId);//추후 삭제 필요_cartService와 연결되어있음 -> 특정 상품 Id 로 단일 상품 조회
 
     List<Product> findByName(String name);
 
