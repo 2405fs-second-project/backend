@@ -39,7 +39,6 @@ public class Users implements UserDetails {
     private String address = "";
 
     @Column(name = "gender", nullable = true) // 성별은 nullable 설정 및 기본값 설정
-    @Enumerated(EnumType.STRING)
     @Builder.Default
     private Gender gender = Gender.UNKNOWN;
 
