@@ -9,7 +9,6 @@ import java.time.LocalDateTime;
 @EqualsAndHashCode
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
 public class ViewOrderResponse {
 
     private Integer userId;
