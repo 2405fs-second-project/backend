@@ -136,6 +136,11 @@ public class OrderService {
                 .map(user -> {
                     Users updatedUser = Users.builder()
                             .id(user.getId())
+                            .email(user.getEmail())  // 기존 이메일 유지
+                            .name(user.getName()) // 기존 이름 유지
+                            .password(user.getPassword()) // 기존 이름 유지
+                            .phoneNum(user.getPhoneNum()) // 기존 이름 유지
+                            .gender(user.getGender()) // 기존 성별 유지
                             .updateName(updateName != null ? updateName : user.getUpdateName())
                             .updateAddress(updateAddress != null ? updateAddress : user.getUpdateAddress())
                             .updatePhone(updatePhone != null ? updatePhone : user.getUpdatePhone())
@@ -146,6 +151,7 @@ public class OrderService {
                 })
                 .orElseThrow(() -> new IllegalArgumentException("User not found with id: " + id));
     }
+
 
     @Transactional(readOnly = true)
     public BuyOrderRequest getProductById(Integer productId, String size) {
