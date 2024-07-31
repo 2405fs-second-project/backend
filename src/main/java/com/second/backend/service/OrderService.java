@@ -148,14 +148,14 @@ public class OrderService {
     }
 
     @Transactional(readOnly = true)
-    public BuyOrderRequest getProductById(Integer productId) {
+    public BuyOrderRequest getProductById(Integer productId, String size) {
         Optional<Product> productOptional = productRepository.findById(productId);
 
         if (productOptional.isPresent()) {
             Product product = productOptional.get();
 
-            // 사이즈 정보를 조회
-            List<ProductSizes> sizes = productSizesRepository.findByProductId(productId);
+            // 사이즈 정보 조회
+            List<ProductSizes> sizes = productSizesRepository.findByProductIdAndSize(productId, size);
             String productSize = sizes.stream()
                     .findFirst()
                     .map(ProductSizes::getSize)
@@ -179,5 +179,50 @@ public class OrderService {
             return null; // 상품이 없는 경우 null 반환
         }
     }
+
+
+    @Transactional
+    public Orders createBuyOrder(Integer userId, CreateOrderRequest request) {
+        // 사용자 조회
+        Users user = usersRepository.findById(userId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+
+        // 상품 사이즈 조회
+        List<ProductSizes> productSizes = productSizesRepository.findByProductIdAndSize(request.getProductId(), request.getSize());
+        if (productSizes.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product size not found");
+        }
+        ProductSizes productSize = productSizes.get(0); // 사이즈가 존재할 경우 첫 번째 사이즈 선택
+
+        // 총 가격 계산
+        int totalPrice = request.getQuantity() * productSize.getProduct().getPrice();
+
+        // 주문 번호 생성
+        String orderNumber = UUID.randomUUID().toString();
+
+        // 주문 생성
+        Orders order = Orders.builder()
+                .user(user)
+                .totalPrice(totalPrice)
+                .orderDate(LocalDateTime.now())
+                .orderNumber(orderNumber)
+                .build();
+
+        Orders savedOrder = orderRepository.save(order);
+
+        // 주문 아이템 생성 및 저장
+        OrderItems orderItem = OrderItems.builder()
+                .order(savedOrder)
+                .product(productSize.getProduct())
+                .quantity(request.getQuantity())
+                .payState("결제완료")
+                .build();
+
+        orderItemsRepository.save(orderItem);
+
+        return savedOrder;
+    }
+
+
 }
 
