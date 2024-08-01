@@ -187,6 +187,7 @@ public class ProductSellerService {
         Integer productid = productSellerDTO.getProductid();
 
         // Step 2: Check if the product exists
+
         Optional<Product> optionalProduct = productRepository.findById(productid);
         if (optionalProduct.isEmpty()) {
             return "물품목록 중에 선택하신 물품이 존재하지 않습니다.";

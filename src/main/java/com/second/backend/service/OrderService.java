@@ -28,11 +28,12 @@ public class OrderService {
     private final CartItemsRepository cartItemsRepository;
     private final ProductRepository productRepository;
     private final ProductSizesRepository productSizesRepository;
+    private final UsersService usersService;
 
     @Transactional(readOnly = true)
     public UserOrderInfoResponse getUserOrderInfo(Integer userId) {
-        Users user = usersRepository.findById(userId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+        Users user = usersService.findById(userId);
+//                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
 
         return new UserOrderInfoResponse(
                 user.getName() != null ? user.getName() : "",
@@ -46,9 +47,12 @@ public class OrderService {
 
 
     @Transactional(readOnly = true)
-    public List<CartItemsResponse> getCartItems(Integer userId) { //장바구니에서 데이터를 가져오는 경우
+    public List<CartItemsResponse> getCartItems(Integer userId) {//장바구니에서 데이터를 가져오는 경우
+
+        Users users = usersService.findById(userId); //유저 연결로 코드추가(지영)
+
         // 장바구니 조회
-        List<CartItems> cartItems = cartItemsRepository.findByUserId(userId);
+        List<CartItems> cartItems = cartItemsRepository.findByUsers(users);
 
         // DTO로 변환 및 로그 추가 : 엔티티 데이터를 DTO 구조로 변환하여 외부로 전달합니다.
         List<CartItemsResponse> cartItemsResponse = cartItems.stream().map(item -> {
@@ -83,14 +87,16 @@ public class OrderService {
         return cartItemsResponse;
     }
 
-    @Transactional
+    @Transactional //객체 변경으로 수정(지영)
     public Orders createOrder(Integer userId) { //주문 결제 후 order_items 의 값을 넣는 경우
+
+
         // 사용자 조회
         Users user = usersRepository.findById(userId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
 
-        // 장바구니 아이템 조회
-        List<CartItems> cartItems = cartItemsRepository.findByUserId(userId);
+        // 장바구니 아이템 조회 *수정* 유저연결로 객체변환(findByUserID -> findByUsers)
+        List<CartItems> cartItems = cartItemsRepository.findByUsers(user);
         if (cartItems.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cart is empty");
         }
@@ -125,8 +131,8 @@ public class OrderService {
             orderItemsRepository.save(orderItem);
         }
 
-        // 장바구니 비우기
-        cartRepository.deleteByUserId(userId);
+        // 장바구니 비우기 -> 유저연결로 객체변환(지영)
+        cartRepository.deleteByUsers(user);
 
         return savedOrder;
     }
