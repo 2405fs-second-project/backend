@@ -12,4 +12,5 @@ public class UpdateUserRequest {
     private String updatePhone;
     private String updateAddress;
     private String shippingInfo;
+    private String gender;
 }

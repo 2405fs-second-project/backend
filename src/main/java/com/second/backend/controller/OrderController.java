@@ -6,6 +6,7 @@ import com.second.backend.model.Users;
 import com.second.backend.service.OrderService;
 import com.second.backend.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -97,26 +98,10 @@ public class OrderController {
         }
     }
 
-    @PostMapping("/place-order/{userId}")
-    public ResponseEntity<OrderResponse> placeOrder(@PathVariable Integer userId) {
-        try{
-            Orders order = orderService.createOrder(userId);
-            OrderResponse orderResponse = new OrderResponse(order.getOrderNumber());
-            return ResponseEntity.status(HttpStatus.CREATED).body(orderResponse);
-        }catch (ResponseStatusException e){
-            HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
-            if(e.getReason() != null) {
-                status = HttpStatus.BAD_REQUEST;
-            }
-            return ResponseEntity.status(status).body(null);
-        }
-    }
-
     @PostMapping("/{id}/shipping")
     public ResponseEntity<Users> updateUser(@PathVariable Integer id, @RequestBody UpdateUserRequest request) {
-        Users user;
         try {
-            user = orderService.updateUser(
+            Users user = orderService.updateUser(
                     id,
                     request.getUpdateName(),
                     request.getUpdateAddress(),
@@ -126,8 +111,16 @@ public class OrderController {
             return ResponseEntity.ok(user);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        } catch (NullPointerException e) {
+            System.err.println("NullPointerException: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        } catch (DataAccessException e) {
+            System.err.println("Database access error: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         } catch (Exception e) {
+            e.printStackTrace(); // 예외 스택 트레이스를 출력하여 문제를 파악
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
+
 }

@@ -40,7 +40,7 @@ public class UsersService {
         Users user = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
 
-        // 파일 타입 검증
+        // 파일 타입
         if (file.isEmpty() || !file.getContentType().startsWith("image/")) {
             throw new IllegalArgumentException("잘못된 파일 타입입니다. 이미지 파일만 허용됩니다.");
         }
