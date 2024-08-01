@@ -24,7 +24,7 @@ public class ProductController {
     public ResponseEntity<Slice<ProductResponse>> getProductsByGender(
             @PathVariable String gender,
             @RequestParam(defaultValue = "0") Integer page,
-            @RequestParam(defaultValue = "10") Integer size) {
+            @RequestParam(defaultValue = "100") Integer size) {
 
         Pageable pageable = PageRequest.of(page, size);
         Slice<ProductResponse> products = productService.findProductsByGender(gender, pageable);

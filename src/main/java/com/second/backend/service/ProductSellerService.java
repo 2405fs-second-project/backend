@@ -1,5 +1,7 @@
 package com.second.backend.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.second.backend.dto.ProductSellerDTO;
 import com.second.backend.model.Product;
 import com.second.backend.model.ProductSizes;
@@ -78,7 +80,7 @@ public class ProductSellerService {
     }
 
     //2. 판매자는 자신이 판매할 물품 등록
-    public Product saveProductWithSizes(Integer sellerId, MultipartFile file, ProductSellerDTO productSellerDTO) {
+    public Product saveProductWithSizes(Integer sellerId,MultipartFile file, ProductSellerDTO productSellerDTO) {
 
         Users seller;
         try {
@@ -87,16 +89,7 @@ public class ProductSellerService {
             // 사용자 객체가 존재하지 않으면 null을 반환합니다.
             return null;
         }
-
-        // 파일 URL을 생성합니다.
-        String productURL = null;
-        if (file != null && !file.isEmpty()) {
-            // 파일 저장 후 URL을 반환받습니다.
-            productURL = commonService.saveProductImage(file); // IOException은 여기에 의해서 발생할 수 있음
-            System.out.println("파일이 성공적으로 저장되었습니다: " + productURL); // 성공적인 파일 저장 메시지
-        } else {
-            System.out.println("업로드된 파일이 없습니다."); // 파일이 없다는 메시지
-        }
+        String fileUrl = commonService.saveProductImage(file);
 
         // Product 엔티티를 생성합니다.
         Product product = Product.builder()
@@ -108,7 +101,7 @@ public class ProductSellerService {
                 .fullName(productSellerDTO.getFullname())
                 .code(productSellerDTO.getCode())
                 .price(productSellerDTO.getPrice())
-                .fileUrl(productURL)
+                .fileUrl(fileUrl)
                 .description(productSellerDTO.getDescription())
                 .DelistedDate(productSellerDTO.getDelisteddate())
                 .listedDate(LocalDate.now()) // 현재 날짜를 listedDate에 설정합니다.
@@ -127,10 +120,9 @@ public class ProductSellerService {
                         .build())
                 .collect(Collectors.toList());
 
-       productSizesRepository.saveAll(sizes);
+        productSizesRepository.saveAll(sizes);
         return savedProduct;
     }
-
 
     //3. 판매자 자신이 등록한 물품 삭제
     @Transactional

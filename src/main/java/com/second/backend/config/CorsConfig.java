@@ -31,5 +31,6 @@ public class CorsConfig implements WebMvcConfigurer {
         // products 이미지 제공
         registry.addResourceHandler("/img/products/**")
                 .addResourceLocations("classpath:/static/img/products/");
+        
     }
 }

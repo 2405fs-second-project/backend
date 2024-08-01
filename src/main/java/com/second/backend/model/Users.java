@@ -31,20 +31,43 @@ public class Users implements UserDetails {
     @Column(nullable = false)
     private String name;
 
-    @Column(name = "phone_num", nullable = false)
-    private String phoneNum; // 수정된 부분
+    @Column(name = "phone_num", nullable = false, length = 20)
+    private String phoneNum;
 
-    @Column(nullable = true) // address is nullable
-    private String address;
+    @Column(name = "address", nullable = true, length = 100) // nullable 설정 및 기본값 설정
+    @Builder.Default
+    private String address = "";
 
-    private String profilePictureUrl;
+    @Column(name = "gender", nullable = true) // 성별은 nullable 설정 및 기본값 설정
+    @Enumerated(EnumType.STRING)
+    @Builder.Default
+    private Gender gender = Gender.UNKNOWN;
 
-    private String aboutMe;
+    @Column(name = "profile_picture_url", columnDefinition = "TEXT DEFAULT ''")
+    @Builder.Default
+    private String profilePictureUrl = "";
 
+    @Column(name = "about_me", length = 100, columnDefinition = "VARCHAR(100) DEFAULT ''")
+    @Builder.Default
+    private String aboutMe = "";
+
+    @Column(name = "update_name", length = 30)
     private String updateName;
+
+    @Column(name = "update_address", length = 500)
     private String updateAddress;
+
+    @Column(name = "update_phone", length = 50)
     private String updatePhone;
+
+    @Column(name = "shipping_info", length = 500)
     private String shippingInfo;
+
+    public enum Gender {
+        MALE,
+        FEMALE,
+        UNKNOWN // 기본값으로 추가
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

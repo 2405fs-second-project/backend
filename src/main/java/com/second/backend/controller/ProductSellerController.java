@@ -27,10 +27,10 @@ public class ProductSellerController {
     @PostMapping("/insert")
     public ResponseEntity<String> InsertProduct(
             @PathVariable Integer sellerid,
-            @RequestParam MultipartFile file,
-            @RequestBody ProductSellerDTO productSellerDTO) {
+            @RequestPart(value="productfile", required = false) MultipartFile files,
+            @RequestPart("productinfo") ProductSellerDTO productSellerDTO) {
 
-        productSellerService.saveProductWithSizes(sellerid,file, productSellerDTO);
+        productSellerService.saveProductWithSizes(sellerid,files, productSellerDTO);
         return ResponseEntity.ok("성공적으로 등록되었습니다.");
     }
 
