@@ -35,14 +35,15 @@ public class OrderService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
 
         return new UserOrderInfoResponse(
-                user.getName(),
-                user.getPhoneNum(),
-                user.getUpdateName(),
-                user.getUpdatePhone(),
-                user.getUpdateAddress(),
-                user.getShippingInfo()
+                user.getName() != null ? user.getName() : "",
+                user.getPhoneNum() != null ? user.getPhoneNum() : "",
+                user.getUpdateName() != null ? user.getUpdateName() : "",
+                user.getUpdatePhone() != null ? user.getUpdatePhone() : "",
+                user.getUpdateAddress() != null ? user.getUpdateAddress() : "",
+                user.getShippingInfo() != null ? user.getShippingInfo() : ""
         );
     }
+
 
     @Transactional(readOnly = true)
     public List<CartItemsResponse> getCartItems(Integer userId) { //장바구니에서 데이터를 가져오는 경우
@@ -136,6 +137,11 @@ public class OrderService {
                 .map(user -> {
                     Users updatedUser = Users.builder()
                             .id(user.getId())
+                            .email(user.getEmail())  // 기존 이메일 유지
+                            .name(user.getName()) // 기존 이름 유지
+                            .password(user.getPassword()) // 기존 이름 유지
+                            .phoneNum(user.getPhoneNum()) // 기존 이름 유지
+                            .gender(user.getGender()) // 기존 성별 유지
                             .updateName(updateName != null ? updateName : user.getUpdateName())
                             .updateAddress(updateAddress != null ? updateAddress : user.getUpdateAddress())
                             .updatePhone(updatePhone != null ? updatePhone : user.getUpdatePhone())
@@ -146,6 +152,7 @@ public class OrderService {
                 })
                 .orElseThrow(() -> new IllegalArgumentException("User not found with id: " + id));
     }
+
 
     @Transactional(readOnly = true)
     public BuyOrderRequest getProductById(Integer productId, String size) {

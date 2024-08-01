@@ -36,6 +36,7 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests
+                        .requestMatchers("/api/auth/validateToken").permitAll()
                         .requestMatchers("/**").permitAll() // 모든 요청 허용
                         .anyRequest().authenticated() // 나머지 요청은 인증 필요
                 )
