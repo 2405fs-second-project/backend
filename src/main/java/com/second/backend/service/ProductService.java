@@ -75,8 +75,10 @@ public class ProductService {
     }
 
     // 특정 물품명 검색 내부 메서드
-    public List<ProductReturn> searchByNameInternal(String name) {
-        List<Product> products = productRepository.findByName(name);
+    public List<ProductReturn> searchByNameOrFullname(String searchQuery) {
+        List<Product> products = productRepository.findByNameOrFullName(searchQuery, searchQuery);
+        // name 또는 fullname 중 하나라도 검색어를 포함하는 경우 제품 반환
+
         return products.stream()
                 .map(product -> {
                     ProductReturn productReturn = new ProductReturn();
