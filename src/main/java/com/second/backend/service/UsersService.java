@@ -66,7 +66,7 @@ public class UsersService {
     }
 
     public String storeFile(MultipartFile file) throws IOException {
-        // 파일 저장 경로 설정
+        // 파일 저장 경로 설정.
         Path uploadPath = Paths.get(uploadDir).toAbsolutePath().normalize();
 
         // 디렉토리가 없으면 생성
@@ -89,7 +89,7 @@ public class UsersService {
             throw new IOException("파일 저장 중 오류가 발생했습니다.", e);
         }
 
-        // 저장된 파일의 URL 반환
+        // 저장된 파일의 URL 반환.
         return "/img/profile/" + uniqueFilename; // 변경된 URL 경로
     }
 }
