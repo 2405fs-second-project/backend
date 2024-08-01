@@ -1,16 +1,17 @@
 package com.second.backend.config;
+
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.beans.factory.annotation.Value;
 
-//CORS 설정 (addCorsMappings):
-//클라이언트 측의 브라우저가 다른 출처의 리소스에 접근할 수 있도록 허용합니다.
-//CORS 정책을 설정하여 외부 도메인에서 오는 요청을 제어합니다.
+// CORS 설정 (addCorsMappings):
+// 클라이언트 측의 브라우저가 다른 출처의 리소스에 접근할 수 있도록 허용합니다.
+// CORS 정책을 설정하여 외부 도메인에서 오는 요청을 제어합니다.
 
 @Configuration
-public class CorsConfig implements WebMvcConfigurer{
+public class CorsConfig implements WebMvcConfigurer {
 
     @Value("${file.upload-dir}")
     private String uploadDir;
@@ -23,10 +24,10 @@ public class CorsConfig implements WebMvcConfigurer{
                 .allowedHeaders("*"); // 허용할 HTTP 헤더
     }
 
-
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/img/**")
+        // "/img/profile/**"로 요청을 받으면 uploadDir 경로에서 파일을 제공
+        registry.addResourceHandler("/img/profile/**")
                 .addResourceLocations("file:" + uploadDir + "/");
     }
 }
