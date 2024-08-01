@@ -65,7 +65,7 @@ public class Users implements UserDetails {
     public enum Gender {
         MALE,
         FEMALE,
-        UNKNOWN
+        UNKNOWN // 기본값으로 추가
     }
 
     @Override
