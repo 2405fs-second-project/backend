@@ -1,9 +1,9 @@
 package com.second.backend.service;
 
-import org.springframework.beans.factory.annotation.Value;
 import com.second.backend.model.Users;
 import com.second.backend.repository.UsersRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -18,29 +18,30 @@ import java.util.UUID;
 @Service
 public class UsersService {
 
-    private final UsersRepository userRepository;
+    private final UsersRepository usersRepository;
 
     @Value("${file.upload-profile}")
     private String uploadDir; // 변경된 파일 저장 경로
 
+    @Transactional
     public Users save(Users user) {
-        return userRepository.save(user);
+        return usersRepository.save(user);
     }
 
     @Transactional(readOnly = true)
     public List<Users> findAll() {
-        return userRepository.findAll();
+        return usersRepository.findAll();
     }
 
     @Transactional(readOnly = true)
     public Users findById(Integer id) {
-        return userRepository.findById(id)
+        return usersRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("not found with id : " + id));
     }
 
     @Transactional
     public Users uploadProfilePicture(Integer id, MultipartFile file) throws IOException {
-        Users user = userRepository.findById(id)
+        Users user = usersRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
 
         // 파일 타입 검증
@@ -51,28 +52,24 @@ public class UsersService {
         String fileUrl = storeFile(file);
         user.setProfilePictureUrl(fileUrl);
 
-        return userRepository.save(user);
+        return usersRepository.save(user);
     }
 
     @Transactional
     public Users updateUser(Integer id, String updateName, String updateAddress, String updatePhone, String shippingInfo) {
-        return userRepository.findById(id)
+        return usersRepository.findById(id)
                 .map(user -> {
-                    Users updatedUser = Users.builder()
-                            .id(user.getId())
-                            .updateName(updateName != null ? updateName : user.getUpdateName())
-                            .updateAddress(updateAddress != null ? updateAddress : user.getUpdateAddress())
-                            .updatePhone(updatePhone != null ? updatePhone : user.getUpdatePhone())
-                            .shippingInfo(shippingInfo != null ? shippingInfo : user.getShippingInfo())
-                            .profilePictureUrl(user.getProfilePictureUrl())
-                            .build();
-                    return userRepository.save(updatedUser);
+                    user.setUpdateName(updateName != null ? updateName : user.getUpdateName());
+                    user.setUpdateAddress(updateAddress != null ? updateAddress : user.getUpdateAddress());
+                    user.setUpdatePhone(updatePhone != null ? updatePhone : user.getUpdatePhone());
+                    user.setShippingInfo(shippingInfo != null ? shippingInfo : user.getShippingInfo());
+                    return usersRepository.save(user);
                 })
                 .orElseThrow(() -> new IllegalArgumentException("User not found with id: " + id));
     }
 
     public String storeFile(MultipartFile file) throws IOException {
-        // 파일 저장 경로 설정
+        // 파일 저장 경로 설정.
         Path uploadPath = Paths.get(uploadDir).toAbsolutePath().normalize();
 
         // 디렉토리가 없으면 생성
@@ -95,7 +92,7 @@ public class UsersService {
             throw new IOException("파일 저장 중 오류가 발생했습니다.", e);
         }
 
-        // 저장된 파일의 URL 반환
+        // 저장된 파일의 URL 반환.
         return "/img/profile/" + uniqueFilename; // 변경된 URL 경로
     }
 }

@@ -1,9 +1,9 @@
 package com.second.backend.controller;
 
-import com.second.backend.model.Users;
-import com.second.backend.service.UsersService;
 import com.second.backend.dto.UpdateUserRequest;
 import com.second.backend.dto.ViewUserResponse;
+import com.second.backend.model.Users;
+import com.second.backend.service.UsersService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

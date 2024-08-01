@@ -41,11 +41,11 @@ public class ProductService {
         Slice<Product> productSlice = productRepository.findByGenderAndKind(gender, kind, pageable);
 
         return productSlice.map(product -> new ProductResponse(
-                        product.getId(),
-                        product.getName(),
-                        product.getColor(),
-                        product.getPrice(),
-                        product.getFileUrl()));
+                product.getId(),
+                product.getName(),
+                product.getColor(),
+                product.getPrice(),
+                product.getFileUrl()));
     }
 
     //3.물품상세 조회 메서드
@@ -80,6 +80,7 @@ public class ProductService {
         return products.stream()
                 .map(product -> {
                     ProductReturn productReturn = new ProductReturn();
+                    productReturn.setId(product.getId()); //  제품 ID 설정
                     productReturn.setCategory_gender(product.getGender());
                     productReturn.setCategory_kind(product.getKind());
                     productReturn.setName(product.getName());
@@ -94,26 +95,5 @@ public class ProductService {
                 .collect(Collectors.toList());
     }
 
-
-
-    // 특정 카테고리로 검색
-    public List<ProductReturn> searchByGenderAndKind(String gender, String kind) {
-        List<Product> products = productRepository.findByCategory(gender, kind);
-        return products.stream()
-                .map(product -> {
-                    ProductReturn productReturn = new ProductReturn();
-                    productReturn.setCategory_gender(gender); // gender를 변수로 설정
-                    productReturn.setCategory_kind(kind);     // kind를 변수로 설정
-                    productReturn.setName(product.getName());
-                    productReturn.setColor(product.getColor());
-                    productReturn.setFullname(product.getFullName());
-                    productReturn.setCode(product.getCode());
-                    productReturn.setPrice(product.getPrice());
-                    productReturn.setFileUrl(product.getFileUrl());
-                    // 필요한 경우 다른 필드도 추가할 수 있음
-                    return productReturn;
-                })
-                .collect(Collectors.toList());
-    }
 
 }
