@@ -5,6 +5,9 @@ import com.second.backend.model.RegisterRequest;
 import com.second.backend.model.AuthenticationResponse;
 import com.second.backend.service.AuthService;
 import com.second.backend.utils.JwtUtil;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -48,5 +51,15 @@ public class AuthController {
         Map<String, Boolean> response = new HashMap<>();
         response.put("valid", isValid);
         return ResponseEntity.ok(response);
+    }
+    private boolean validateSessionInternal() {
+        return true;
+    }
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    static class TokenResponse {
+        private boolean isValid;
     }
 }
