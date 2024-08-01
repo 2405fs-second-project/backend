@@ -1,8 +1,7 @@
 package com.second.backend.service;
 
-import com.second.backend.dto.CartItemUpdateRequest;
-import com.second.backend.dto.CartRequest;
-import com.second.backend.dto.CartResponse;
+
+import com.second.backend.dto.*;
 import com.second.backend.model.*;
 import com.second.backend.repository.*;
 import lombok.RequiredArgsConstructor;
@@ -22,59 +21,57 @@ public class CartService { //장바구니 기능 제공
     private final ProductSizesRepository productSizesRepository;
 
     @Transactional
-    public String addToCart(CartRequest cartRequest) {
-        // 사용자 확인
-        Optional<Users> optionalUser = usersRepository.findById(cartRequest.getUserId());
-        if (optionalUser.isEmpty()) {
-            return "사용자가 없습니다.";
+    public String addToCart(CartDTO cartDTO) {
+      Integer usersid = cartDTO.getUsersid();
+      Integer productsizeid = cartDTO.getItemSizeid();
+
+        Carts carts = cartRepository.findByCartUserId(usersid);
+        if(carts == null){
+            carts = new Carts();
+            carts.setUserId(usersid);
+            carts = cartRepository.save(carts);
         }
-        Users user = optionalUser.get();
+        Integer cartid = carts.getId();
+        cartDTO = CartDTO.builder()
+                .usersid(usersid)
+                .itemSizeid(productsizeid)
+                .cartid(cartid)
+                .build();
 
-        // 장바구니 확인 및 생성
-        Optional<Carts> optionalCart = cartRepository.findByUserId(cartRequest.getUserId());
-        Carts cart = optionalCart.orElseGet(() -> {
-            Carts newCart = new Carts();
-            newCart.setUserId(user.getId());
-            return cartRepository.save(newCart);
-        });
+        ProductSizes productSizes = productSizesRepository.findByCartSizeIde(productsizeid);
 
-        // 상품 확인
-        Optional<Product> optionalProduct = productRepository.findById(cartRequest.getProductId());
-        if (optionalProduct.isEmpty()) {
-            return "판매되는 상품이 아닙니다.";
+        Integer productid = productSizes.getProduct().getId();
+        String productsize = productSizes.getSize();
+
+        //Product product = productRepository.findById(productid);
+
+        CartItems cartItems = cartItemsRepository.findByCartIdAndProductIdAndItemSizeId(cartid, productid, productsizeid);
+        if(cartItems == null){
+            cartItems = CartItems.builder()
+                    .cart(cartid)
+                    .product(productid)
+                    .productSizes(productsizeid)
+                    .quantity(1) // 초기 수량은 1
+                    .build();
+        }else {
+            cartItems.setQuantity(cartItems.getQuantity() + 1); // 수량 증가
         }
-        Product product = optionalProduct.get();
+        cartItemsRepository.save(cartItems)
 
-        // 상품 사이즈 확인
-        Optional<ProductSizes> optionalProductSizes = productSizesRepository.findOptionalByProductIdAndSize(
-                cartRequest.getProductId(),
-                cartRequest.getSize()
-        );
-        if (optionalProductSizes.isEmpty()) {
-            return "해당 사이즈의 상품이 없습니다.";
-        }
-        ProductSizes productSizes = optionalProductSizes.get();
+        cartDTO = CartDTO.builder()
+                .usersid(userid)
+                .itemSizeId(productsizeid)
+                .cartId(cartid)
+                .productId(productid)
+                .itemSize(productsize)
+                .fileUrl(product.getFileUrl())
+                .name(product.getName())
+                .color(product.getColor())
+                .price(product.getPrice())
+                .quantity(cartItem.getQuantity())
+                .build();
+    }
 
-        // 장바구니 아이템 업데이트
-        Optional<CartItems> optionalCartItem = cartItemsRepository.findByCartAndProductAndProductSizes(
-                cart, product, productSizes
-        );
-
-        if (optionalCartItem.isPresent()) {
-            CartItems existingCartItem = optionalCartItem.get();
-            existingCartItem.setQuantity(existingCartItem.getQuantity() + cartRequest.getQuantity());
-            cartItemsRepository.save(existingCartItem);
-        } else {
-            CartItems newCartItem = new CartItems();
-            newCartItem.setCart(cart);
-            newCartItem.setProduct(product);
-            newCartItem.setProductSizes(productSizes);
-            newCartItem.setQuantity(cartRequest.getQuantity());
-            newCartItem.setUserId(user.getId());
-            cartItemsRepository.save(newCartItem);
-        }
-
-        return "장바구니에 추가되었습니다.";
     }
 
     @Transactional //주은추가

@@ -9,6 +9,7 @@ import java.util.Optional;
 public interface ProductSizesRepository extends JpaRepository<ProductSizes, Integer> {
 
     Optional<ProductSizes> findById(Integer id);
+    ProductSizes findByCartSizeIde(Integer id);
     Optional<ProductSizes> findOptionalByProductIdAndSize(Integer productId, String size);
     List<ProductSizes> findSizesByProductId(Integer productid);
     List<ProductSizes> findByProductIdIn(List<Integer> productids);
