@@ -1,6 +1,6 @@
 package com.second.backend.service;
+
 import com.second.backend.repository.CartItemsRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -8,8 +8,11 @@ import java.util.List;
 @Service
 public class CartItemsServiceImpl implements CartItemsService {
 
-    @Autowired
-    private CartItemsRepository cartItemsRepository;
+    private final CartItemsRepository cartItemsRepository;
+
+    public CartItemsServiceImpl(CartItemsRepository cartItemsRepository) {
+        this.cartItemsRepository = cartItemsRepository;
+    }
 
     @Override
     public void deleteItemsByIds(List<Integer> ids) {

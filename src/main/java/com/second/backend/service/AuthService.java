@@ -1,4 +1,3 @@
-// AuthService.java
 package com.second.backend.service;
 
 import com.second.backend.model.LoginRequest;
@@ -7,21 +6,23 @@ import com.second.backend.model.Users;
 import com.second.backend.model.AuthenticationResponse;
 import com.second.backend.repository.UsersRepository;
 import com.second.backend.utils.JwtUtil;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional
 public class AuthService {
 
-    @Autowired
-    private UsersRepository usersRepository;
+    private final UsersRepository usersRepository;
+    private final JwtUtil jwtUtil;
+    private final PasswordEncoder passwordEncoder;
 
-    @Autowired
-    private JwtUtil jwtUtil;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    public AuthService(UsersRepository usersRepository, JwtUtil jwtUtil, PasswordEncoder passwordEncoder) {
+        this.usersRepository = usersRepository;
+        this.jwtUtil = jwtUtil;
+        this.passwordEncoder = passwordEncoder;
+    }
 
     public AuthenticationResponse register(RegisterRequest registerRequest) {
         // 비밀번호 확인
@@ -35,11 +36,12 @@ public class AuthService {
         }
 
         // 사용자 정보 저장
-        Users newUser = new Users();
-        newUser.setName(registerRequest.getName());
-        newUser.setPhoneNum(registerRequest.getPhoneNum()); // 전화번호 필드 수정
-        newUser.setEmail(registerRequest.getEmail());
-        newUser.setPassword(passwordEncoder.encode(registerRequest.getPassword())); // 비밀번호 암호화
+        Users newUser = Users.builder()
+                .name(registerRequest.getName())
+                .phoneNum(registerRequest.getPhoneNum())
+                .email(registerRequest.getEmail())
+                .password(passwordEncoder.encode(registerRequest.getPassword()))
+                .build();
 
         usersRepository.save(newUser);
 

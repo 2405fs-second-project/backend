@@ -34,11 +34,11 @@ public class Users implements UserDetails {
     @Column(name = "phone_num", nullable = false, length = 20)
     private String phoneNum;
 
-    @Column(name = "address", nullable = true, length = 100) // nullable 설정 및 기본값 설정
+    @Column(name = "address", nullable = true, length = 100)
     @Builder.Default
     private String address = "";
 
-    @Column(name = "gender", nullable = true) // 성별은 nullable 설정 및 기본값 설정
+    @Column(name = "gender", nullable = true)
     @Builder.Default
     private Gender gender = Gender.UNKNOWN;
 
