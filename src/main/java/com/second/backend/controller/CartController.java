@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -32,20 +33,21 @@ public class CartController {
         }
     }
 
-    @GetMapping("/items")
-    public ResponseEntity<List<CartResponse>> getCartItems(@RequestParam Integer userId) {
+    @GetMapping("/items") //주은추가
+    public ResponseEntity<?> getCartItems(@RequestParam Integer userId) {
         try {
             List<CartResponse> cartItems = cartService.getCartItemsByUserId(userId);
-            if (cartItems != null) {
+            if (cartItems != null && !cartItems.isEmpty()) {
                 return ResponseEntity.ok(cartItems);
             } else {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No cart items found for user ID: " + userId);
             }
         } catch (Exception e) {
-            e.printStackTrace(); // 오류 로그 출력
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            e.printStackTrace(); // 로그에 자세한 예외 출력
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error fetching cart items: " + e.getMessage());
         }
     }
+
 
 
     @DeleteMapping("/delete")
