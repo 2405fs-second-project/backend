@@ -77,37 +77,43 @@ public class CartService { //장바구니 기능 제공
         return "장바구니에 추가되었습니다.";
     }
 
-    @Transactional
+    @Transactional //주은추가
     public List<CartResponse> getCartItemsByUserId(Integer userId) {
-        Optional<Carts> optionalCart = cartRepository.findByUserId(userId); //장바구니 조회
-        if (optionalCart.isEmpty()) {
-            return Collections.emptyList();
+        try {
+            Optional<Carts> optionalCart = cartRepository.findByUserId(userId); // 장바구니 조회
+            if (optionalCart.isEmpty()) {
+                return Collections.emptyList();
+            }
+            Carts cart = optionalCart.get();
+
+            List<CartItems> cartItemsList = cartItemsRepository.findByCart(cart);
+
+            List<CartResponse> responses = new ArrayList<>(); // 아이템 정보 구성
+            for (CartItems cartItems : cartItemsList) {
+                Product product = cartItems.getProduct();
+                ProductSizes productSizes = cartItems.getProductSizes();
+
+                CartResponse response = new CartResponse();
+                response.setId(cartItems.getId());
+                response.setName(product.getName());
+                response.setColor(product.getColor());
+                response.setSize(productSizes.getSize());
+                response.setQuantity(cartItems.getQuantity());
+                response.setPrice(product.getPrice());
+
+                String filePath = product.getFileUrl().replace("/img/", "");
+                response.setFileUrl(filePath);
+
+                responses.add(response);
+            }
+
+            return responses;
+        } catch (Exception e) {
+            e.printStackTrace(); // 로그에 자세한 예외 출력
+            throw new RuntimeException("Error fetching cart items", e);
         }
-        Carts cart = optionalCart.get();
-
-        List<CartItems> cartItemsList = cartItemsRepository.findByCart(cart);
-
-        List<CartResponse> responses = new ArrayList<>(); //아이템 정보구성
-        for (CartItems cartItems : cartItemsList) {
-            Product product = cartItems.getProduct();
-            ProductSizes productSizes = cartItems.getProductSizes();
-
-            CartResponse response = new CartResponse();
-            response.setId(cartItems.getId());
-            response.setName(product.getName());
-            response.setColor(product.getColor());
-            response.setSize(productSizes.getSize());
-            response.setQuantity(cartItems.getQuantity());
-            response.setPrice(product.getPrice());
-
-            String filePath = product.getFileUrl().replace("/img/", "");
-            response.setFileUrl(filePath);
-
-            responses.add(response);
-        }
-
-        return responses;
     }
+
 
     @Transactional
     public CartItems updateCartItemQuantity(CartItemUpdateRequest request) { //장바구니 아이템의 수량 업데이트
