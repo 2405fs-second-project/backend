@@ -1,5 +1,7 @@
 package com.second.backend.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.second.backend.dto.ProductSellerDTO;
 import com.second.backend.model.Product;
 import com.second.backend.model.ProductSizes;
@@ -14,6 +16,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -28,6 +31,7 @@ public class ProductSellerService {
     private final ProductRepository productRepository;
     private final ProductSizesRepository productSizesRepository;
     private final UsersRepository usersRepository;
+    private final CommonService commonService;
 
     //1.판매자는 자신이 현재 판매중인 전체 물품 조회
     public List<ProductSellerDTO> findProductsBySellerId(Integer sellerId) {
@@ -76,7 +80,7 @@ public class ProductSellerService {
     }
 
     //2. 판매자는 자신이 판매할 물품 등록
-    public Product saveProductWithSizes(Integer sellerId, ProductSellerDTO productSellerDTO) {
+    public Product saveProductWithSizes(Integer sellerId,MultipartFile file, ProductSellerDTO productSellerDTO) {
 
         Users seller;
         try {
@@ -85,6 +89,7 @@ public class ProductSellerService {
             // 사용자 객체가 존재하지 않으면 null을 반환합니다.
             return null;
         }
+        String fileUrl = commonService.saveProductImage(file);
 
         // Product 엔티티를 생성합니다.
         Product product = Product.builder()
@@ -96,7 +101,7 @@ public class ProductSellerService {
                 .fullName(productSellerDTO.getFullname())
                 .code(productSellerDTO.getCode())
                 .price(productSellerDTO.getPrice())
-                .fileUrl(productSellerDTO.getFileurl())
+                .fileUrl(fileUrl)
                 .description(productSellerDTO.getDescription())
                 .DelistedDate(productSellerDTO.getDelisteddate())
                 .listedDate(LocalDate.now()) // 현재 날짜를 listedDate에 설정합니다.
@@ -115,10 +120,9 @@ public class ProductSellerService {
                         .build())
                 .collect(Collectors.toList());
 
-       productSizesRepository.saveAll(sizes);
+        productSizesRepository.saveAll(sizes);
         return savedProduct;
     }
-
 
     //3. 판매자 자신이 등록한 물품 삭제
     @Transactional
@@ -183,6 +187,7 @@ public class ProductSellerService {
         Integer productid = productSellerDTO.getProductid();
 
         // Step 2: Check if the product exists
+
         Optional<Product> optionalProduct = productRepository.findById(productid);
         if (optionalProduct.isEmpty()) {
             return "물품목록 중에 선택하신 물품이 존재하지 않습니다.";

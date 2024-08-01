@@ -1,7 +1,6 @@
 package com.second.backend.repository;
 
 import com.second.backend.model.Product;
-import com.second.backend.model.Users;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -15,12 +14,10 @@ import java.util.Optional; //추후 삭제 필요_cartService와 연결되어있
 public interface ProductRepository extends JpaRepository<Product, Integer>{
     Slice<Product> findByGenderAndKind(String gender, String kind, Pageable pageable);
     Slice<Product> findByGender(String gender, Pageable pageable);
-
+    Product findProductById(Integer Id);
     Page<Product> findByUsersId(Integer sellerId, Pageable pageable);
-
-    List<Product> findProductById(Integer Id);
-    Optional<Product> findById(Integer userId);//추후 삭제 필요_cartService와 연결되어있음 -> 특정 상품 Id 로 단일 상품 조회
-
+    List<Product> findListById(Integer Id);
+Optional<Product> findById(Integer Id);//특정 상품 Id 로 단일 상품 조회
     @Query("SELECT p FROM Product p WHERE "
             + "(:name IS NULL OR LOWER(p.name) LIKE LOWER(CONCAT('%', :name, '%'))) OR "
             + "(:fullname IS NULL OR LOWER(p.fullName) LIKE LOWER(CONCAT('%', :fullname, '%')))")

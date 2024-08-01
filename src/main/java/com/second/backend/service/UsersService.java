@@ -3,6 +3,7 @@ package com.second.backend.service;
 import com.second.backend.model.Users;
 import com.second.backend.repository.UsersRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -18,7 +19,9 @@ import java.util.UUID;
 public class UsersService {
 
     private final UsersRepository usersRepository;
-    private final String uploadDir = "src/main/resources/img/profile"; // 변경된 파일 저장 경로
+
+    @Value("${file.upload-profile}")
+    private String uploadDir; // 변경된 파일 저장 경로
 
     @Transactional
     public Users save(Users user) {

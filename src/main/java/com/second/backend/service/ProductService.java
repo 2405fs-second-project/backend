@@ -50,7 +50,7 @@ public class ProductService {
 
     //3.물품상세 조회 메서드
     public List<ProductDetailResponse> findProductsDetailById(Integer productid) {
-        List<Product> products = productRepository.findProductById(productid);
+        List<Product> products = productRepository.findListById(productid);
         List<ProductSizes> productSizes =productSizesRepository.findSizesByProductId(productid);
         return products.stream()
                 .map(product -> {

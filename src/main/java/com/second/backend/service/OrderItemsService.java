@@ -17,7 +17,7 @@ public class OrderItemsService {
 
     private final OrderItemsRepository orderItemsRepository;
 
-    @Value("${file.upload-dir}")
+    @Value("${file.upload-products}")
     private String uploadDir;
 
     @Transactional(readOnly = true)  // 데이터 일관성을 유지하는데 도움이 되는 것
