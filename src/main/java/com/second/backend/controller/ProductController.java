@@ -52,15 +52,6 @@ public class ProductController {
         return ResponseEntity.ok(products);
     }
 
-    // 특정 카테고리로 검색
-    @GetMapping("/category")
-    public ResponseEntity<List<ProductReturn>> searchByGenderAndKind(@RequestParam String gender,
-                                                                     @RequestParam String kind) {
-        List<ProductReturn> products = productService.searchByGenderAndKind(gender, kind);
-        return ResponseEntity.ok(products);
-    }
+
 }
-
-
-
 
