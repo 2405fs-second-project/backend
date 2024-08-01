@@ -3,6 +3,10 @@ package com.second.backend.controller;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 @RestController
 @RequestMapping("/api/auth")
 public class ValidateTokenController {
@@ -20,19 +24,10 @@ public class ValidateTokenController {
         return true; // 세션이 유효하면 true 반환
     }
 
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
     static class TokenResponse {
         private boolean isValid;
-
-        public TokenResponse(boolean isValid) {
-            this.isValid = isValid;
-        }
-
-        public boolean getIsValid() {
-            return isValid;
-        }
-
-        public void setIsValid(boolean isValid) {
-            this.isValid = isValid;
-        }
     }
 }

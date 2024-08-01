@@ -35,14 +35,15 @@ public class OrderService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
 
         return new UserOrderInfoResponse(
-                user.getName(),
-                user.getPhoneNum(),
-                user.getUpdateName(),
-                user.getUpdatePhone(),
-                user.getUpdateAddress(),
-                user.getShippingInfo()
+                user.getName() != null ? user.getName() : "",
+                user.getPhoneNum() != null ? user.getPhoneNum() : "",
+                user.getUpdateName() != null ? user.getUpdateName() : "",
+                user.getUpdatePhone() != null ? user.getUpdatePhone() : "",
+                user.getUpdateAddress() != null ? user.getUpdateAddress() : "",
+                user.getShippingInfo() != null ? user.getShippingInfo() : ""
         );
     }
+
 
     @Transactional(readOnly = true)
     public List<CartItemsResponse> getCartItems(Integer userId) { //장바구니에서 데이터를 가져오는 경우
