@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -54,10 +55,12 @@ public class ProductService {
         List<ProductSizes> productSizes =productSizesRepository.findSizesByProductId(productid);
         return products.stream()
                 .map(product -> {
-                    List<String> sizes = productSizes.stream()
+                    Map<Integer, String> sizes = productSizes.stream()
                             .filter(size -> size.getProduct().getId().equals(productid))
-                            .map(ProductSizes::getSize)
-                            .collect(Collectors.toList());
+                            .collect(Collectors.toMap(
+                                    ProductSizes::getId,   // 키: size의 ID
+                                    ProductSizes::getSize             // 값: size의 사이즈
+                            ));
 
                     return new ProductDetailResponse(
                             product.getId(),
