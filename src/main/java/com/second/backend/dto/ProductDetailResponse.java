@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.List;
+import java.util.Map;
 
 @Getter
 @Setter
@@ -21,5 +22,5 @@ public class ProductDetailResponse {
     private Integer price;
     private String fileUrl;
     private String description;
-    private List<String> sizes;
+    private Map<Integer, String> sizes;
 }

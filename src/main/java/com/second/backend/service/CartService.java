@@ -26,6 +26,9 @@ public class CartService {
     private final UsersService usersService;
     private final UsersRepository usersRepository;
     private static final Logger logger = LoggerFactory.getLogger(CartService.class);
+    private Map<Integer, Integer> cartItems = new HashMap<>();
+
+
     //1. 장바구니 추가 메서드
     public void addToCart(CartDTO cartDTO) {
         Integer UserId = cartDTO.getUsersid();
@@ -117,7 +120,7 @@ public class CartService {
     }
 
     //3. 장바구니 삭제 메서드
-    public ResponseEntity<String> deleteCartItems (List<CartDTO> deleteCartDTO) {
+    public ResponseEntity<String> deleteCartItems(List<CartDTO> deleteCartDTO) {
         // 1. deleteCartDTO에서 id 값 추출
         List<Integer> idsToDelete = deleteCartDTO.stream()
                 .map(CartDTO::getId) // CartDTO에서 itemid 추출
@@ -144,20 +147,28 @@ public class CartService {
 
     }
 
+    //4. 장바구니 수량수정 메서드
+    public String updateQuantity(Integer id, Integer quantity) {
+        try {
+            if (quantity == null || quantity <= 0) {
+                return "Quantity must be greater than zero";
+            }
 
-    //2. 장바구니 수량 수정 메서드
-    public CartItems updateCartItemQuantity(CartItemUpdateRequest request) { //장바구니 아이템의 수량 업데이트
-        Optional<CartItems> cartItemOptional = cartItemsRepository.findById(request.getItemId());
+            CartItems item = cartItemsRepository.findById(id)
+                    .orElseThrow(() -> new IllegalArgumentException("Cart item not found"));
 
-        if (cartItemOptional.isPresent()) {
-            CartItems cartItem = cartItemOptional.get();
-            cartItem.setQuantity(request.getQuantity());
-            cartItemsRepository.save(cartItem);
-            return cartItem; // 업데이트된 장바구니 아이템을 반환
-        } else {
-            return null; // 아이템을 찾지 못했을 경우 null 반환
+            item.setQuantity(quantity);
+            cartItemsRepository.save(item);
+            return "Quantity updated successfully";
+
+        } catch (IllegalArgumentException e) {
+            return e.getMessage(); // This message will be sent to the controller
+        } catch (Exception e) {
+            // Log the exception for debugging purposes
+            e.printStackTrace();
+            return "An unexpected error occurred"; // This message will be sent to the controller
         }
     }
-
 }
+
 
