@@ -26,20 +26,6 @@ public class CartController {
             return ResponseEntity.ok("장바구니 등록에 성공하였습니다!");
 
     }
-//    @GetMapping("/items") //주은추가
-//    public ResponseEntity<?> getCartItems(@RequestParam Integer userId) {
-//        try {
-//            List<CartResponse> cartItems = cartService.getCartItemsByUserId(userId);
-//            if (cartItems != null && !cartItems.isEmpty()) {
-//                return ResponseEntity.ok(cartItems);
-//            } else {
-//                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No cart items found for user ID: " + userId);
-//            }
-//        } catch (Exception e) {
-//            e.printStackTrace(); // 로그에 자세한 예외 출력
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error fetching cart items: " + e.getMessage());
-//        }
-//    }
 
     @GetMapping("/items/{id}")//지영 추가
     public ResponseEntity<List<CartDTO>> getCartItems(@PathVariable Integer id) {
@@ -54,13 +40,13 @@ public class CartController {
         return cartService.deleteCartItems(deleteCartDTO);
     }
 
-    @PostMapping("/updateQuantity")
-    public ResponseEntity<CartItems> updateQuantity(@RequestBody CartItemUpdateRequest request) {
-        CartItems updatedCartItem = cartService.updateCartItemQuantity(request);
-       if (updatedCartItem != null) {
-            return ResponseEntity.ok(updatedCartItem);
+    @PutMapping("/quantity")
+    public ResponseEntity<String> updateQuantity(@RequestBody CartDTO cartDTO) {
+        String result = cartService.updateQuantity(cartDTO.getId(), cartDTO.getItemQuantity());
+        if (result.equals("Quantity updated successfully")) {
+            return ResponseEntity.ok(result);
         } else {
-           return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            return ResponseEntity.badRequest().body(result);
         }
     }
 }
