@@ -24,7 +24,7 @@ public class ProductController {
     public ResponseEntity<Slice<ProductResponse>> getProductsByGender(
             @PathVariable String gender,
             @RequestParam(defaultValue = "0") Integer page,
-            @RequestParam(defaultValue = "10") Integer size) {
+            @RequestParam(defaultValue = "100") Integer size) {
 
         Pageable pageable = PageRequest.of(page, size);
         Slice<ProductResponse> products = productService.findProductsByGender(gender, pageable);
@@ -47,20 +47,12 @@ public class ProductController {
 
     // 특정 물품명 검색
     @GetMapping("/search")
-    public ResponseEntity<List<ProductReturn>> searchByName(@RequestParam String name) {
-        List<ProductReturn> products = productService.searchByNameInternal(name);
+    public ResponseEntity<List<ProductReturn>> searchByNameOrFullName(@RequestParam String searchQuery) {
+        List<ProductReturn> products = productService.searchByNameOrFullname(searchQuery);
         return ResponseEntity.ok(products);
+        // searchQuery 이름의 요청 매개변수를 받아서 name, fullname을 모두 검색할 수 있도록 서비스의 메서드를 호출
     }
 
-    // 특정 카테고리로 검색
-    @GetMapping("/category")
-    public ResponseEntity<List<ProductReturn>> searchByGenderAndKind(@RequestParam String gender,
-                                                                     @RequestParam String kind) {
-        List<ProductReturn> products = productService.searchByGenderAndKind(gender, kind);
-        return ResponseEntity.ok(products);
-    }
+
 }
-
-
-
 

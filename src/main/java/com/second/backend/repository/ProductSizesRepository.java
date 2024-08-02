@@ -12,8 +12,10 @@ public interface ProductSizesRepository extends JpaRepository<ProductSizes, Inte
     Optional<ProductSizes> findOptionalByProductIdAndSize(Integer productId, String size);
     List<ProductSizes> findSizesByProductId(Integer productid);
     List<ProductSizes> findByProductIdIn(List<Integer> productids);
+    List<ProductSizes> findByIdIn(List<Integer> ids);
     List<ProductSizes> findByProductIdAndSize(Integer productId, String size);
+    ProductSizes findProductSizesById(Integer Id);
     boolean existsByProductId(Integer productid);
     void deleteByProductId(Integer productId);
-
+    Optional<ProductSizes> findSizesByProductIdAndSize(Integer productId, String size);
 }

@@ -27,7 +27,7 @@ public class OrderItemsController {
 
     private final OrderItemsService orderItemsService;
 
-    @Value("${file.upload-dir}")
+    @Value("${file.upload-products}")
     private String uploadDir;
 
     @GetMapping("/user/{userId}")

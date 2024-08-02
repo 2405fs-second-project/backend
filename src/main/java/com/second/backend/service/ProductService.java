@@ -41,16 +41,16 @@ public class ProductService {
         Slice<Product> productSlice = productRepository.findByGenderAndKind(gender, kind, pageable);
 
         return productSlice.map(product -> new ProductResponse(
-                        product.getId(),
-                        product.getName(),
-                        product.getColor(),
-                        product.getPrice(),
-                        product.getFileUrl()));
+                product.getId(),
+                product.getName(),
+                product.getColor(),
+                product.getPrice(),
+                product.getFileUrl()));
     }
 
     //3.물품상세 조회 메서드
     public List<ProductDetailResponse> findProductsDetailById(Integer productid) {
-        List<Product> products = productRepository.findProductById(productid);
+        List<Product> products = productRepository.findListById(productid);
         List<ProductSizes> productSizes =productSizesRepository.findSizesByProductId(productid);
         return products.stream()
                 .map(product -> {
@@ -75,11 +75,14 @@ public class ProductService {
     }
 
     // 특정 물품명 검색 내부 메서드
-    public List<ProductReturn> searchByNameInternal(String name) {
-        List<Product> products = productRepository.findByName(name);
+    public List<ProductReturn> searchByNameOrFullname(String searchQuery) {
+        List<Product> products = productRepository.findByNameOrFullName(searchQuery, searchQuery);
+        // name 또는 fullname 중 하나라도 검색어를 포함하는 경우 제품 반환
+
         return products.stream()
                 .map(product -> {
                     ProductReturn productReturn = new ProductReturn();
+                    productReturn.setId(product.getId()); //  제품 ID 설정
                     productReturn.setCategory_gender(product.getGender());
                     productReturn.setCategory_kind(product.getKind());
                     productReturn.setName(product.getName());
@@ -94,26 +97,5 @@ public class ProductService {
                 .collect(Collectors.toList());
     }
 
-
-
-    // 특정 카테고리로 검색
-    public List<ProductReturn> searchByGenderAndKind(String gender, String kind) {
-        List<Product> products = productRepository.findByCategory(gender, kind);
-        return products.stream()
-                .map(product -> {
-                    ProductReturn productReturn = new ProductReturn();
-                    productReturn.setCategory_gender(gender); // gender를 변수로 설정
-                    productReturn.setCategory_kind(kind);     // kind를 변수로 설정
-                    productReturn.setName(product.getName());
-                    productReturn.setColor(product.getColor());
-                    productReturn.setFullname(product.getFullName());
-                    productReturn.setCode(product.getCode());
-                    productReturn.setPrice(product.getPrice());
-                    productReturn.setFileUrl(product.getFileUrl());
-                    // 필요한 경우 다른 필드도 추가할 수 있음
-                    return productReturn;
-                })
-                .collect(Collectors.toList());
-    }
 
 }

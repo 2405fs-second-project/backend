@@ -6,6 +6,7 @@ import com.second.backend.service.ProductSellerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -26,9 +27,10 @@ public class ProductSellerController {
     @PostMapping("/insert")
     public ResponseEntity<String> InsertProduct(
             @PathVariable Integer sellerid,
-            @RequestBody ProductSellerDTO productSellerDTO) {
+            @RequestPart(value="productfile", required = false) MultipartFile files,
+            @RequestPart("productinfo") ProductSellerDTO productSellerDTO) {
 
-        productSellerService.saveProductWithSizes(sellerid, productSellerDTO);
+        productSellerService.saveProductWithSizes(sellerid,files, productSellerDTO);
         return ResponseEntity.ok("성공적으로 등록되었습니다.");
     }
 
