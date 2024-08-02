@@ -17,5 +17,5 @@ public interface ProductSizesRepository extends JpaRepository<ProductSizes, Inte
     ProductSizes findProductSizesById(Integer Id);
     boolean existsByProductId(Integer productid);
     void deleteByProductId(Integer productId);
-
+    Optional<ProductSizes> findSizesByProductIdAndSize(Integer productId, String size);
 }

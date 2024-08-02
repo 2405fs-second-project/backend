@@ -19,7 +19,7 @@ public class ProductSizes {
     private Integer id;
 
     @ManyToOne
-    @JoinColumn(name = "Product_id")
+    @JoinColumn(name = "product_id")
     private Product product;
 
     @Column(name = "option_size", length = 50)

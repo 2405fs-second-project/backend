@@ -59,7 +59,7 @@ public class OrderService {
             Product product = item.getProduct();
             ProductSizes productSize = item.getProductSizes();
 
-            String filePath = product.getFileUrl().replace("/img/", ""); // "/img/" 제거
+            String filePath = product.getFileUrl().replace("http://localhost:8081/img/products/", ""); // 중복된 경로 제거/ "/img/" 제거
 
             // 변환 데이터 확인용 로그
             System.out.println("Product ID: " + product.getId());
@@ -87,17 +87,15 @@ public class OrderService {
         return cartItemsResponse;
     }
 
-    @Transactional //객체 변경으로 수정(지영)
-    public Orders createOrder(Integer userId) { //주문 결제 후 order_items 의 값을 넣는 경우
-
-
+    @Transactional
+    public Orders createOrder(Integer userId) {
         // 사용자 조회
         Users user = usersRepository.findById(userId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
 
-        // 장바구니 아이템 조회 *수정* 유저연결로 객체변환(findByUserID -> findByUsers)
+        // 장바구니 아이템 조회
         List<CartItems> cartItems = cartItemsRepository.findByUsers(user);
-        if (cartItems.isEmpty()) {
+        if (cartItems == null || cartItems.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cart is empty");
         }
 
@@ -131,8 +129,8 @@ public class OrderService {
             orderItemsRepository.save(orderItem);
         }
 
-        // 장바구니 비우기 -> 유저연결로 객체변환(지영)
-        cartRepository.deleteByUsers(user);
+        // 장바구니 비우기
+        cartItemsRepository.deleteAll(cartItems); // 장바구니 아이템 삭제
 
         return savedOrder;
     }
@@ -168,14 +166,13 @@ public class OrderService {
             Product product = productOptional.get();
 
             // 사이즈 정보 조회
-            List<ProductSizes> sizes = productSizesRepository.findByProductIdAndSize(productId, size);
-            String productSize = sizes.stream()
-                    .findFirst()
+            Optional<ProductSizes> sizeOptional = productSizesRepository.findSizesByProductIdAndSize(productId, size);
+            String productSize = sizeOptional
                     .map(ProductSizes::getSize)
                     .orElse("N/A"); // 사이즈 정보가 없으면 "N/A"로 설정
 
             // 파일 경로 수정
-            String filePath = product.getFileUrl().replace("/img/", "");
+            String filePath = product.getFileUrl().replace("http://localhost:8081/img/products/", ""); // 중복된 경로 제거
 
             return new BuyOrderRequest(
                     product.getId(),
@@ -194,6 +191,7 @@ public class OrderService {
     }
 
 
+
     @Transactional
     public Orders createBuyOrder(Integer userId, CreateOrderRequest request) {
         // 사용자 조회
@@ -201,11 +199,12 @@ public class OrderService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
 
         // 상품 사이즈 조회
-        List<ProductSizes> productSizes = productSizesRepository.findByProductIdAndSize(request.getProductId(), request.getSize());
-        if (productSizes.isEmpty()) {
+        Optional<ProductSizes> productSizeOptional = productSizesRepository.findSizesByProductIdAndSize(request.getProductId(), request.getSize());
+        if (productSizeOptional.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product size not found");
         }
-        ProductSizes productSize = productSizes.get(0); // 사이즈가 존재할 경우 첫 번째 사이즈 선택
+
+        ProductSizes productSize = productSizeOptional.get(); // 사이즈가 존재할 경우 선택
 
         // 총 가격 계산
         int totalPrice = request.getQuantity() * productSize.getProduct().getPrice();
@@ -235,6 +234,5 @@ public class OrderService {
 
         return savedOrder;
     }
-
 
 }

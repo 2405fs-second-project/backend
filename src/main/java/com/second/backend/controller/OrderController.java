@@ -40,15 +40,15 @@ public class OrderController {
     public ResponseEntity<BuyOrderRequest> getProduct(
             @PathVariable Integer productId,
             @RequestParam(required = false) String size) {
-        BuyOrderRequest product = orderService.getProductById(productId, size); // 사이즈를 포함하여 서비스에서 상품 정보 가져오기
+        System.out.println("Received size parameter: " + size); // 로그 추가
+        BuyOrderRequest product = orderService.getProductById(productId, size);
 
-        if (product == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null); // 데이터가 없을 때 404 Not Found 응답
+        if (size == null || size.equals("undefined")) {
+            return ResponseEntity.badRequest().body(null); // 적절한 에러 응답을 반환
         }
 
-        return ResponseEntity.ok(product); // 정상적으로 데이터를 반환
+        return ResponseEntity.ok(product);
     }
-
 
     @PostMapping("/create/{userId}")
     public ResponseEntity<ViewOrderResponse> createOrder(@PathVariable Integer userId) {
@@ -87,16 +87,15 @@ public class OrderController {
             return ResponseEntity.status(HttpStatus.CREATED).body(viewOrderResponse);
         } catch (ResponseStatusException e) {
             System.err.println("Error creating order: " + e.getMessage());
-            HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
-            if (e.getReason() != null) {
-                status = HttpStatus.BAD_REQUEST;
-            }
-            return ResponseEntity.status(status).body(null);
+            // BAD_REQUEST 상태 코드로 응답
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         } catch (Exception e) {
             System.err.println("Unexpected error: " + e.getMessage());
+            // INTERNAL_SERVER_ERROR 상태 코드로 응답
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
+
 
     @PostMapping("/{id}/shipping")
     public ResponseEntity<Users> updateUser(@PathVariable Integer id, @RequestBody UpdateUserRequest request) {

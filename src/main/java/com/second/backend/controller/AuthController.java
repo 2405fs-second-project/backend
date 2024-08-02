@@ -45,7 +45,7 @@ public class AuthController {
         }
     }
 
-    @PostMapping("/validate")
+    @PostMapping("/validateToken")
     public ResponseEntity<Map<String, Boolean>> validateToken(@RequestHeader("Authorization") String token) {
         boolean isValid = jwtUtil.validateToken(token.substring(7));
         Map<String, Boolean> response = new HashMap<>();
